@@ -1,6 +1,10 @@
-A lightweight and customizable javascript timepicker, can be used with or without jQuery.
+A lightweight, accessible and customizable javascript timepicker, can be used with or without jQuery. Accessibility is based on ARIA states and keyboard support. The styling is kept simple and can be easily changed.
 
 # Usage
+
+# Options
+
+# Styling
 
 # Datepair Plugin Example
 

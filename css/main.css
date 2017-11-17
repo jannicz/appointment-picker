@@ -1,4 +1,17 @@
+.appo-picker {
+    border: 1px solid grey;
+    background-color: white;
+    max-height: 450px;
+    max-width: 450px;
+}
 
+.appo-picker-list {
+    
+}
+
+.appo-picker-list-item {
+    display: inline-block;
+}
 
 /* ==========================================================================
    Helper classes

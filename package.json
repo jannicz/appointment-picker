@@ -1,19 +1,19 @@
 {
-  "name": "simple-timepicker",
+  "name": "Appointment-Picker",
   "version": "0.1.0",
-  "description": "Timepicker for input fields",
+  "description": "customizable timepicker to be used with or without jQuery",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jannicz/timepicker.git"
+    "url": "git+https://github.com/jannicz/appointment-picker.git"
   },
   "author": "Jan Suwart",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jannicz/timepicker/issues"
+    "url": "https://github.com/jannicz/appointment-picker/issues"
   },
-  "homepage": "https://github.com/jannicz/timepicker#readme"
+  "homepage": "https://github.com/jannicz/appointment-picker#readme"
 }

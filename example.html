@@ -13,35 +13,43 @@
 <body>
 	<h1>Appointment Picker</h1>
 
-	<h2>Type Time</h2>
+	<h2>With jQuery</h2>
 	<p>
-		<label for="time-1">Empty Time Input</label>
-		<input id="time-1" class="timepicker" type="time">
+		<label for="time-1">Empty Text Input</label>
+		<input id="time-1" type="text">
 	</p>
 	<p>
-		<label for="time-2">Default Value Time Input</label>
-		<input id="time-2" type="time" value="13:30">
-	</p>
-
-	<h2>Type Text</h2>
-	<p>
-		<label for="time-3">Empty Text Input</label>
-		<input id="time-3" type="time">
-	</p>
-	<p>
-		<label for="time-4">Default Value Text Input</label>
-		<input id="time-4" type="time" value="13:30">
+		<label for="time-2">Default Value Text Input</label>
+		<input id="time-2" class="appo-picker-input-1" type="text" value="13:30">
 	</p>
 
 	<script type="text/javascript">
 		// To use appointmentPicker as jQuery plugin
 		$.fn.appointmentPicker = function(options) {
-		    this.appointmentPicker = new AppointmentPicker(this, options);
+		    this.appointmentPicker = new AppointmentPicker(this, this[0], options);
 		    return this;
 		};
 
-		$('.timepicker').appointmentPicker({
-			interval: 30,
+		$('.appo-picker-input-1').appointmentPicker({
+			interval: 60,
+			mode: '24h',
+			minTime: '9:00',
+			maxTime: '20:00'
+		});
+	</script>
+
+	<h2>Without jQuery</h2>
+	<p>
+		<label for="time-3">Empty Text Input</label>
+		<input id="time-3" class="appo-picker-input-3" type="text">
+	</p>
+
+	<script type="text/javascript">
+		var input = document.getElementsByClassName('appo-picker-input-3');
+
+		var picker = new AppointmentPicker(null, input[0], {
+			interval: 60,
+			mode: '24h',
 			minTime: '9:00',
 			maxTime: '20:00'
 		});
