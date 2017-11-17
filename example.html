@@ -6,14 +6,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/main.css">
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="js/appointment-picker.js"></script>
 </head>
 <body>
-	<h1>Simple Timepicker</h1>
+	<h1>Appointment Picker</h1>
 
 	<h2>Type Time</h2>
 	<p>
 		<label for="time-1">Empty Time Input</label>
-		<input id="time-1" type="time">
+		<input id="time-1" class="timepicker" type="time">
 	</p>
 	<p>
 		<label for="time-2">Default Value Time Input</label>
@@ -30,7 +33,18 @@
 		<input id="time-4" type="time" value="13:30">
 	</p>
 
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-	<script src="js/main.js"></script>
+	<script type="text/javascript">
+		// To use appointmentPicker as jQuery plugin
+		$.fn.appointmentPicker = function(options) {
+		    this.appointmentPicker = new AppointmentPicker(this, options);
+		    return this;
+		};
+
+		$('.timepicker').appointmentPicker({
+			interval: 30,
+			minTime: '9:00',
+			maxTime: '20:00'
+		});
+	</script>
 </body>
 </html>
