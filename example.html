@@ -13,14 +13,16 @@
 <body>
 	<h1>Appointment Picker</h1>
 
-	<h2>With jQuery</h2>
+	<h2>With jQuery 60min intervall</h2>
 	<p>
 		<label for="time-1">Empty Text Input</label>
-		<input id="time-1" type="text">
+		<input id="time-1" class="appo-picker-input-1" type="text">
 	</p>
+
+	<h2>With jQuery 15min intervall</h2>
 	<p>
 		<label for="time-2">Default Value Text Input</label>
-		<input id="time-2" class="appo-picker-input-1" type="text" value="13:30">
+		<input id="time-2" class="appo-picker-input-2" type="text" value="13:30">
 	</p>
 
 	<script type="text/javascript">
@@ -36,9 +38,16 @@
 			minTime: '9:00',
 			maxTime: '20:00'
 		});
+
+		$('.appo-picker-input-2').appointmentPicker({
+			interval: 15,
+			mode: '24h',
+			minTime: '9:00',
+			maxTime: '20:00'
+		});
 	</script>
 
-	<h2>Without jQuery</h2>
+	<h2>Without jQuery 30min intervall AM/PM mode</h2>
 	<p>
 		<label for="time-3">Empty Text Input</label>
 		<input id="time-3" class="appo-picker-input-3" type="text">
@@ -48,10 +57,10 @@
 		var input = document.getElementsByClassName('appo-picker-input-3');
 
 		var picker = new AppointmentPicker(null, input[0], {
-			interval: 60,
-			mode: '24h',
-			minTime: '9:00',
-			maxTime: '20:00'
+			interval: 30,
+			mode: '12h',
+			minTime: '10:00',
+			maxTime: '22:00'
 		});
 	</script>
 </body>
