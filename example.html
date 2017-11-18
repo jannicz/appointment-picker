@@ -6,7 +6,7 @@
 	<title>Appointment Picker</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/normalize.css">
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/appointment-picker.css">
 
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="js/appointment-picker.js"></script>
@@ -14,56 +14,73 @@
 <body>
 	<h1>Appointment Picker</h1>
 
-	<h2>With jQuery 60min intervall</h2>
+	<h2>1. Default Options, jQuery</h2>
 	<p>
-		<label for="time-1">Empty Text Input</label>
-		<input id="time-1" class="appo-picker-input-1" type="text" aria-expanded="false">
+		<label for="time-1">Time</label>
+		<input id="time-1" type="text" placeholder="hh:mm" aria-expanded="false">
+		<button id="remove-1">Destroy Picker 1</button>
 	</p>
 
-	<h2>With jQuery 15min intervall</h2>
+	<h2>2. Options: 24h mode, 15min intervall, time limits, is-large, jQuery</h2>
 	<p>
-		<label for="time-2">Default Value Text Input</label>
-		<input id="time-2" class="appo-picker-input-2" type="text" value="13:30" aria-expanded="false">
+		<label for="time-2">Time</label>
+		<input id="time-2" type="text" value="11:15" placeholder="hh:mm" aria-expanded="false">
 	</p>
 
 	<script type="text/javascript">
 		// To use appointmentPicker as jQuery plugin
 		$.fn.appointmentPicker = function(options) {
-		    this.appointmentPicker = new AppointmentPicker(this, this[0], options);
+		    this.appointmentPicker = new AppointmentPicker(this[0], options);
 		    return this;
 		};
 
-		$('.appo-picker-input-1').appointmentPicker({
-			interval: 60,
-			mode: '24h'
+		var $picker = $('#time-1').appointmentPicker();
+
+		$('#remove-1').on('click', function() {
+			// Access the picker instance of the jQuery object and call the destroy function 
+			$picker.appointmentPicker.destroy();
 		});
 
-		$('.appo-picker-input-2').appointmentPicker({
+		$('#time-2').appointmentPicker({
+			title: 'Timepicker',
 			interval: 15,
-			mode: '24h',
-			minTime: 09,
-			maxTime: 20,
-			startTime: 07,
-			endTime: 22
+			minTime: 10,
+			maxTime: 18,
+			startTime: 09,
+			endTime: 20,
+			large: true
 		});
 	</script>
 
-	<h2>Without jQuery 30min intervall AM/PM mode</h2>
+	<h2>3. Options: 12h mode, 30min intervall</h2>
 	<p>
-		<label for="time-3">Empty Text Input</label>
-		<input id="time-3" class="appo-picker-input-3" type="text" aria-expanded="false">
+		<label for="time-3">Time</label>
+		<input id="time-3" type="text" value="2:30 pm" placeholder="h:mm am" aria-expanded="false">
+	</p>
+
+	<h2>4. Options: 12h mode, is-large, start end without limitation</h2>
+	<p>
+		<label for="time-4">Time</label>
+		<input id="time-4" type="text" value="12:00 pm" placeholder="h:mm am" aria-expanded="false">
 	</p>
 
 	<script type="text/javascript">
-		var input = document.getElementsByClassName('appo-picker-input-3');
-
-		var picker = new AppointmentPicker(null, input[0], {
+		var picker = new AppointmentPicker(document.getElementById('time-3'), {
 			interval: 30,
 			mode: '12h',
 			minTime: 09,
 			maxTime: 22,
 			startTime: 08,
 			endTime: 24
+		});
+
+		console.log('Get time from picker 3 =>', picker.getTime());
+
+		new AppointmentPicker(document.getElementById('time-4'), {
+			mode: '12h',
+			startTime: 10,
+			endTime: 18,
+			large: true
 		});
 	</script>
 </body>
