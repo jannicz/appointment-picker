@@ -5,8 +5,8 @@ A lightweight, accessible and customizable javascript timepicker. Accessibility 
  - tiny (<6KB minified, <2KB gzipped)
  - may be used with or without jQuery
  - styling is easy to change
-
- ![alt text](https://github.com/jannicz/appointment-picker/tree/develop/examples/appointment-picker.png "Normal mode")
+ 
+ <img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-picker.png" width="240" />
 
 # Usage
 Import both the stylesheet and the script
@@ -56,7 +56,7 @@ Appointment-Picker can be configured with options
 
 __Note:__ with startTime and endTime appointment hours can be visually removed. If startTime is greater then minTime a lower time can still be manually set via the keyboard. On the other hand the picker does not accept times lower then minTime and higher then maxTime.
 
-Pass the options into the the initial function call
+Pass the options into the the AppointmentPicker call or the jQuery plugin call
 ```javascript
 var picker = new AppointmentPicker(document.getElementById('time-2'), {
   interval: 30,
@@ -66,6 +66,11 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
   startTime: 08,
   endTime: 24,
   large: true
+});
+
+// With jQuery
+$('#time-1').appointmentPicker({
+  interval: 15
 });
 ```
 
