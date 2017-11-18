@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Simple Timepicker</title>
+	<meta name="author" content="Jan Suwart">
+	<title>Appointment Picker</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/main.css">
@@ -16,13 +17,13 @@
 	<h2>With jQuery 60min intervall</h2>
 	<p>
 		<label for="time-1">Empty Text Input</label>
-		<input id="time-1" class="appo-picker-input-1" type="text">
+		<input id="time-1" class="appo-picker-input-1" type="text" aria-expanded="false">
 	</p>
 
 	<h2>With jQuery 15min intervall</h2>
 	<p>
 		<label for="time-2">Default Value Text Input</label>
-		<input id="time-2" class="appo-picker-input-2" type="text" value="13:30">
+		<input id="time-2" class="appo-picker-input-2" type="text" value="13:30" aria-expanded="false">
 	</p>
 
 	<script type="text/javascript">
@@ -34,23 +35,23 @@
 
 		$('.appo-picker-input-1').appointmentPicker({
 			interval: 60,
-			mode: '24h',
-			minTime: '9:00',
-			maxTime: '20:00'
+			mode: '24h'
 		});
 
 		$('.appo-picker-input-2').appointmentPicker({
 			interval: 15,
 			mode: '24h',
-			minTime: '9:00',
-			maxTime: '20:00'
+			minTime: 09,
+			maxTime: 20,
+			startTime: 07,
+			endTime: 22
 		});
 	</script>
 
 	<h2>Without jQuery 30min intervall AM/PM mode</h2>
 	<p>
 		<label for="time-3">Empty Text Input</label>
-		<input id="time-3" class="appo-picker-input-3" type="text">
+		<input id="time-3" class="appo-picker-input-3" type="text" aria-expanded="false">
 	</p>
 
 	<script type="text/javascript">
@@ -59,8 +60,10 @@
 		var picker = new AppointmentPicker(null, input[0], {
 			interval: 30,
 			mode: '12h',
-			minTime: '10:00',
-			maxTime: '22:00'
+			minTime: 09,
+			maxTime: 22,
+			startTime: 08,
+			endTime: 24
 		});
 	</script>
 </body>
