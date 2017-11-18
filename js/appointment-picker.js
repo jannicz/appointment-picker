@@ -48,7 +48,8 @@
 		this.picker = null;
 		this.isOpen = false;
 		this.isInDom = false;
-		this.currentTime = [];
+		this.time = [];
+		this.displayTime = '';
 		this.selectionEventFn = this.select.bind(this);
 		this.changeEventFn = this.onchange.bind(this);
 		this.closeEventFn = this.close.bind(this);
@@ -87,15 +88,32 @@
 
 	// Attach visibility classes and set the picker's position
 	AppointmentPicker.prototype.render = function() {
-		//console.log('render, entered time =>', this.el.value);
-
 		if (this.isOpen) {
+			var bottom = this.el.offsetTop + this.el.offsetHeight;
+			var left = this.el.offsetLeft;
+			var oldSelectedEl = this.picker.querySelector('input.is-selected');
+
 			this.picker.classList.add('is-open');
 			this.el.setAttribute('aria-expanded', true);
+
+			if (oldSelectedEl) {
+				oldSelectedEl.classList.remove('is-selected');
+			}
+			if (this.time.length) {
+				var selectedEl = this.picker.querySelector('[value="' + this.displayTime + '"]');
+				
+				if (selectedEl) {
+					selectedEl.classList.add('is-selected');
+				}
+			}
+
+			this.picker.style.top = bottom + 'px';
+			this.picker.style.left = left + 'px';
 		} else {
 			this.picker.classList.remove('is-open');
 			this.el.setAttribute('aria-expanded', false);
 		}
+
 		//.replace('{{styles}}', 'top: 100px, left: 100px;')
 	}
 
@@ -104,18 +122,17 @@
 	 * @param {Event} e - some event
 	 */
 	AppointmentPicker.prototype.open = function(e) {
-		var _this = this;
-
 		if (this.isOpen) return;
 		if (!this.isInDom) {
 			this.picker = this.build();
 			this.isInDom = true;
 		}
-
-		_this.isOpen = true;
-		_this.render();
+		this.isOpen = true;
+		this.render();
 		
 		this.picker.addEventListener('click', this.selectionEventFn);
+
+		var _this = this;
 		// Delay document click listener to prevent picker flashing
 		setTimeout(function() {	
 			document.addEventListener('click', _this.closeEventFn);
@@ -157,11 +174,9 @@
 		var _this = this;
 		if (!e.target.value) return;
 
-		this.el.value = e.target.value;
+		this.setTime(e.target.value);
 
-		this.currentTime = _parseTime(e.target.value);
-
-		console.log('select event, currentTime =>', this.currentTime);
+		console.log('select event, currentTime =>', this.time);
 
 		setTimeout(function() {
 			_this.close();
@@ -170,7 +185,7 @@
 
 	AppointmentPicker.prototype.onchange = function(e) {
 		this.setTime(this.el.value);
-		console.log('change event, currentTime =>', this.currentTime);		
+		console.log('change event, currentTime =>', this.time);		
 	}
 
 	AppointmentPicker.prototype.tabKeyInput = function(e) {
@@ -209,36 +224,40 @@
 	 */
 	AppointmentPicker.prototype.setTime = function(value) {
 		var time = _parseTime(value);
-		var isPm = /pm/i.test(time[2]);
+		var hour = time[0];
 		var is24h = this.options.mode === '24h';
+		var timePattern = is24h ? this.template.time24 : this.template.time12;
+		
+		//console.log('time to set', time, 'hour', hour, 'is24h', is24h);
 
-		// Bump the hour by 12 if the value is PM
-		// FIXME might be wrong doing this with 12pm
-		var hour = isPm ? Number(time[0]) + 12 : Number(time[0]);
-
-		console.log('time to set', time, 'hour', hour, 'is24h', is24h);
-
-		// If input time does not pass the min/max limits, it will not be applied
 		if (!time.length) {
 			console.log('wrong format');
 		} else if (hour < this.options.minTime || hour > this.options.maxTime) {
-			console.log('too low / too low', hour, this.options.minTime);
-			
+			console.log('hour out of min/max', hour, this.options.minTime, this.options.maxTime);
 		} else if (hour > 24) {
-			console.log('wrong format');
+			console.log('wrong format', hour);
 		} else {
-			this.currentTime = time;
+			this.time = time;
 		}
 
-		if (this.currentTime.length) {
-			var ct = this.currentTime;
-			this.el.value = ct[0] + ':' + ct[1] + (!is24h ? ' ' + ct[2] : '');
+		/*
+		// If input time does not pass the min/max limits, it will not be applied
+		if (time.length && hour < 24 && (hour > this.options.minTime ||
+			hour < this.options.maxTime)) {
+			this.time = time;
+		}
+		*/
+
+		// Set the time both as currentTime and as input value
+		if (this.time.length) {
+			this.displayTime = _printTime(this.time[0], this.time[1], timePattern, !is24h);
+			this.el.value = this.displayTime;
 		}
 	}
 
 	// Exposed time getter
 	AppointmentPicker.prototype.getTime = function() {
-		return this.currentTime;
+		return this.time;
 	}
 
 	/**
@@ -255,11 +274,53 @@
 	/**
 	 * @param {String} time - time that needs to be parsed, i.e. '11:15PM '
 	 * @returns {Array} containing [hour, minute, am/pm/24h]
+	 * @see https://regexr.com/3h7bo  
 	 */
 	function _parseTime(time) {
 		var match = time.match(/^([\d]{1,2}):([\d]{2})[\s]*([ap][m])?.*$/);
-		if (match) return [match[1], match[2], match[3] ? match[3] : '24h'];
+		var hour;
+
+		if (match) {
+			console.log('parse time, match =>', match);
+
+			if (match[3] === 'pm' && match[1] !== '12') {
+				hour = Number(match[1]) + 12;
+			} else if (match[3] === 'am' && match[1] === '12') {
+				hour = 0;
+			} else {
+				hour = match[1]
+			}
+
+			//var hour = match[3] === 'pm' ? Number(match[1]) + 12 : match[1];
+			return [hour.toString() , match[2]];
+		}
 		return [];
+	}
+
+	/**
+	 * Create time considering am/pm conventions
+	 * @param {String} hour 
+	 * @param {String} minute
+	 * @param {String} pattern - used time format
+	 * @param {Boolean} isAmPmMode - false if 24h mode
+	 * @return {String} time string
+	 */
+	function _printTime(hour, minute, pattern, isAmPmMode) {
+		var displayminute = _zeroPadTime(minute);
+		var displayHour;
+		//console.log('print time', typeof hour, minute);
+
+		if (isAmPmMode && hour > 12) {
+			displayHour = hour - 12;
+		} else if (isAmPmMode && hour == 0) {
+			displayHour = 12;
+		} else {
+			displayHour = hour;
+		}
+		if (isAmPmMode) {
+			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
+		}
+		return pattern.replace('H', displayHour).replace('M', displayminute);
 	}
 
 	/**
@@ -281,26 +342,19 @@
 
 		// Iterate all appointment times based on start, end and interval
 		for (var i = 0; i < times; i++) {
-			var isFullHour, minute, displayminute, displayHour;
-			var timeTemplate = timePattern;
+			var isFullHour, minute, timeTemplate;
 			var isDisabled = false;
 
 			isFullHour = perHour === countPerHour;
-			displayHour = isAmPmMode && hour > 12 ? hour - 12 : hour;
 			minute = opt.interval * (countPerHour - 1);
-			displayminute = _zeroPadTime(opt.interval * (countPerHour - 1));
 			isDisabled = hour < opt.minTime || hour > opt.maxTime;
 
-			if (isAmPmMode) {
-				timeTemplate = timePattern.replace(hour < 12 ? 'p' : 'a', '');
-			}
-
 			if (start <= hour) {
-				// Replace timeTemplate placeholders with time, disabled flag and label
+				timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode);
+
+				// Replace timeTemplate placeholders with time and disabled flag
 				inner += tpl.inner
-					.replace('{{time}}', timeTemplate
-						.replace('H', displayHour)
-						.replace('M', displayminute))
+					.replace('{{time}}', timeTemplate)
 					.replace('{{disabled}}', isDisabled ? 'disabled': '');
 			}
 

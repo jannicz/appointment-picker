@@ -66,6 +66,12 @@
     background-color: #ff8000;
 }
 
+.appo-picker-list-item input[type="button"].is-selected {
+    background-color: #33aaff;
+    color: #fff;
+    box-shadow: inset 0 1px 2px #666;
+}
+
 .appo-picker-list-item input[type="button"]:disabled {
     background-color: #D5E9F7;
     opacity: 0.3;
