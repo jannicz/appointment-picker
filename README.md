@@ -6,6 +6,8 @@ A lightweight, accessible and customizable javascript timepicker. Accessibility 
  - may be used with or without jQuery
  - styling is easy to change
 
+ ![alt text](https://github.com/jannicz/appointment-picker/tree/develop/examples/appointment-picker.png "Normal mode")
+
 # Usage
 Import both the stylesheet and the script
 ```html
@@ -42,6 +44,30 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {});
 ```
 
 # Options
+Appointment-Picker can be configured with options
+- `interval` sets the interval between appointments in minutes (1-60), if this number gets high the picker will get a scrollbar, default is `60`
+- `mode` the picker can be used in standard `24h` hour mode or in `12h` mode - the latter uses am/pm postfix
+- `minTime` sets the minimum hour that can be picked, default is `0` what is eqivalent to 12am
+- `maxTime` sets the maximum hour that can be picked, default is `24`
+- `startTime` hides all appointments below this hour, default is `0`
+- `endTime` hides all appointments above this hour, default is `24`
+- `large` increasesthe size of the picker and the appointments by setting a `is-large` modifier
+- `title` defines the picker's heading
+
+__Note:__ with startTime and endTime appointment hours can be visually removed. If startTime is greater then minTime a lower time can still be manually set via the keyboard. On the other hand the picker does not accept times lower then minTime and higher then maxTime.
+
+Pass the options into the the initial function call
+```javascript
+var picker = new AppointmentPicker(document.getElementById('time-2'), {
+  interval: 30,
+  mode: '12h',
+  minTime: 09,
+  maxTime: 22,
+  startTime: 08,
+  endTime: 24,
+  large: true
+});
+```
 
 # Methods
 To get the current time programatically from a picker instance use
