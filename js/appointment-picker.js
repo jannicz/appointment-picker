@@ -48,8 +48,8 @@
 		this.picker = null;
 		this.isOpen = false;
 		this.isInDom = false;
-		this.time = [];
-		this.displayTime = '';
+		this.time = []; // i.e. ['18', '30']
+		this.displayTime = ''; // i.e. '6:30pm'
 		this.selectionEventFn = this.select.bind(this);
 		this.changeEventFn = this.onchange.bind(this);
 		this.closeEventFn = this.close.bind(this);
@@ -72,10 +72,10 @@
 
 		if (!_this.el) return;
 		if (_this.el.length !== undefined) {
-			console.warn('appointment-picker error: please pass only one dom-element as argument');
+			console.warn('appointment-picker: pass only one dom element as argument');
 			return;
 		} else if (_this.options.interval > 60) {
-			console.warn('appointment-picker error: the maximal interval in 60');
+			console.warn('appointment-picker: the maximal interval is 60');
 			return;
 		}
 
@@ -113,8 +113,6 @@
 			this.picker.classList.remove('is-open');
 			this.el.setAttribute('aria-expanded', false);
 		}
-
-		//.replace('{{styles}}', 'top: 100px, left: 100px;')
 	}
 
 	/**
@@ -261,7 +259,7 @@
 	}
 
 	/**
-	 * Add a leading zero and converts to string i
+	 * Add a leading zero and convert to string
 	 * @param {Number} number - number that needs to be padded
 	 * @returns {String} i.e. '05'
 	 */
@@ -272,8 +270,8 @@
 	}
 
 	/**
-	 * @param {String} time - time that needs to be parsed, i.e. '11:15PM '
-	 * @returns {Array} containing [hour, minute, am/pm/24h]
+	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM '
+	 * @returns {Array} containing [hour, minute]
 	 * @see https://regexr.com/3h7bo  
 	 */
 	function _parseTime(time) {

@@ -5,26 +5,35 @@
 	<meta name="author" content="Jan Suwart">
 	<title>Appointment Picker</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="css/normalize.css">
+	<style type="text/css">
+		html {
+		  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+	</style>
 	<link rel="stylesheet" href="css/appointment-picker.css">
-
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="js/appointment-picker.js"></script>
 </head>
 <body>
 	<h1>Appointment Picker</h1>
 
-	<h2>1. Default Options, jQuery</h2>
+	<p>A lightweight, accessible and customizable javascript timepicker.</p>
+	<p><a href="https://github.com/jannicz/appointment-picker">
+			<strong>Appointment-Picker source on Github</strong></a></p>
+
+	<h2>Default Options, jQuery</h2>
 	<p>
 		<label for="time-1">Time</label>
 		<input id="time-1" type="text" placeholder="hh:mm" aria-expanded="false">
-		<button id="remove-1">Destroy Picker 1</button>
+		<button id="remove-1">Destroy</button>
 	</p>
 
-	<h2>2. Options: 24h mode, 15min intervall, time limits, is-large, jQuery</h2>
+	<h2>24h mode, 15min intervall, time limits, is-large, jQuery</h2>
 	<p>
 		<label for="time-2">Time</label>
 		<input id="time-2" type="text" value="11:15" placeholder="hh:mm" aria-expanded="false">
+		<button id="open-2">Open</button>
+		<button id="set-2">Set 14:30</button>
 	</p>
 
 	<script type="text/javascript">
@@ -41,7 +50,7 @@
 			$picker.appointmentPicker.destroy();
 		});
 
-		$('#time-2').appointmentPicker({
+		var $picker2 = $('#time-2').appointmentPicker({
 			title: 'Timepicker',
 			interval: 15,
 			minTime: 10,
@@ -50,15 +59,23 @@
 			endTime: 20,
 			large: true
 		});
+
+		$('#open-2').on('click', function() {
+			$picker2.appointmentPicker.open();
+		});
+		$('#set-2').on('click', function() {
+			$picker2.appointmentPicker.setTime('14:30');
+			$picker2.appointmentPicker.open();
+		});
 	</script>
 
-	<h2>3. Options: 12h mode, 30min intervall</h2>
+	<h2>12h mode, 30min intervall</h2>
 	<p>
 		<label for="time-3">Time</label>
 		<input id="time-3" type="text" value="2:30 pm" placeholder="h:mm am" aria-expanded="false">
 	</p>
 
-	<h2>4. Options: 12h mode, is-large, start end without limitation</h2>
+	<h2>12h mode, is-large, start end without limitation</h2>
 	<p>
 		<label for="time-4">Time</label>
 		<input id="time-4" type="text" value="12:00 pm" placeholder="h:mm am" aria-expanded="false">
@@ -83,5 +100,8 @@
 			large: true
 		});
 	</script>
+
+	<p>Report bugs or feature requests on <a href="https://github.com/jannicz/appointment-picker/issues">Github Issues</a></p>
+	<p><small>Copyright Jan Suwart, MIT license</small></p>
 </body>
 </html>
