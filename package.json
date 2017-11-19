@@ -1,6 +1,6 @@
 {
   "name": "Appointment-Picker",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "customizable timepicker to be used with or without jQuery",
   "main": "index.js",
   "scripts": {

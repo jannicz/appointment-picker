@@ -2,7 +2,7 @@
  * Appointment-Picker
  *
  * @module Appointment-Picker
- * @version 0.2.0
+ * @version 0.3.0
  *
  * @author Jan Suwart
 */
@@ -35,7 +35,6 @@
 			large: false, // Whether large button style
 			title: 'Pick a time'
 		};
-
 		this.template = {
 			inner: '<li class="appo-picker-list-item">' +
 				'<input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
@@ -44,17 +43,20 @@
 			time12: 'H:M apm',
 			time24: 'H:M'
 		};
+
 		this.el = el;
 		this.picker = null;
 		this.isOpen = false;
 		this.isInDom = false;
-		this.time = []; // i.e. ['18', '30']
-		this.displayTime = ''; // i.e. '6:30pm'
+		this.time = []; // ['18', '30']
+		this.intervals = []; // [0, 15, 30, 45]
+		this.displayTime = ''; // '6:30pm'
 		this.selectionEventFn = this.select.bind(this);
 		this.changeEventFn = this.onchange.bind(this);
 		this.closeEventFn = this.close.bind(this);
 		this.openEventFn = this.open.bind(this);
-		this.tabkeyEventFn = this.tabKeyInput.bind(this);
+		this.keyEventFn = this.onKeyPress.bind(this);
+		this.tabKeyUpEventFn = this.onTabKeyUp.bind(this);
 
 		initialize(this, el, options || {});
 	};
@@ -78,12 +80,17 @@
 			console.warn('appointment-picker: the maximal interval is 60');
 			return;
 		}
+		// Create array holding all minute permutations
+		for (var j = 0; j < 60 / _this.options.interval; j++) {
+			_this.intervals[j] = j * _this.options.interval;
+		}
 
 		_this.setTime(_this.el.value);
 
 		el.addEventListener('focus', _this.openEventFn);
-		el.addEventListener('keyup', _this.tabkeyEventFn);
+		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
+		el.addEventListener('keydown', _this.tabKeyUpEventFn);
 	}
 
 	// Attach visibility classes and set the picker's position
@@ -129,6 +136,7 @@
 		this.render();
 		
 		this.picker.addEventListener('click', this.selectionEventFn);
+		this.picker.addEventListener('keyup', this.keyEventFn);
 
 		var _this = this;
 		// Delay document click listener to prevent picker flashing
@@ -161,6 +169,7 @@
 		this.render();
 
 		this.picker.removeEventListener('click', this.selectionEventFn);
+		this.picker.removeEventListener('keyup', this.keyEventFn);
 		document.removeEventListener('click', this.closeEventFn);
 	}
 
@@ -173,31 +182,52 @@
 		if (!e.target.value) return;
 
 		this.setTime(e.target.value);
-
-		console.log('select event, currentTime =>', this.time);
-
-		setTimeout(function() {
-			_this.close();
-		}, 100);
+		this.el.focus();
+		setTimeout(_this.close(), 100);
 	}
 
+	// Handles manual input changes on input field
 	AppointmentPicker.prototype.onchange = function(e) {
 		this.setTime(this.el.value);
-		console.log('change event, currentTime =>', this.time);		
 	}
 
-	AppointmentPicker.prototype.tabKeyInput = function(e) {
-		//console.log('keyup', e);
+	/**
+	 * Move focus forward and backward on keyboard arrow key, close picker on ESC
+	 * @param {Event} e - keyboard event
+	 */
+	AppointmentPicker.prototype.onKeyPress = function(e) {
+		var first = this.picker.querySelector('input[type="button"]');
+		var selected = this.picker.querySelector('input:focus') ||
+			this.picker.querySelector('input.is-selected');
+		var next = null;
 
-		if ((e.keyCode === 16 || e.keyCode === 9) && this.isOpen) {
-			// this.close(e);
+		switch (e.keyCode) {
+			case 27:
+				this.close();
+				break;
+			case 37:
+			case 38:
+				next = selected ? selected.parentNode.previousElementSibling : first.parentNode;
+				break;
+			case 39:
+			case 40:
+				next = selected ? selected.parentNode.nextElementSibling : first.parentNode;
+				break;
+			default:
 		}
+
+		if (next) next.firstChild.focus();
+	}
+
+	// Close the picker on a TAB key event
+	AppointmentPicker.prototype.onTabKeyUp = function(e) {
+		if (e.keyCode === 9) this.close(e);
 	}
 
 	// Create a dom node containing the markup for the picker
 	AppointmentPicker.prototype.build = function() {
 		var node = document.createElement('div');
-		node.innerHTML = _assemblePicker(this.options, this.template);
+		node.innerHTML = _assemblePicker(this.options, this.template, this.intervals);
 		node.className = ('appo-picker' + (this.options.large ? ' is-large' : ''));
 		this.el.insertAdjacentElement('afterend', node);
 		return node;
@@ -223,6 +253,7 @@
 	AppointmentPicker.prototype.setTime = function(value) {
 		var time = _parseTime(value);
 		var hour = time[0];
+		var minute = Number(time[1]);
 		var is24h = this.options.mode === '24h';
 		var timePattern = is24h ? this.template.time24 : this.template.time12;
 		
@@ -234,14 +265,16 @@
 			console.log('hour out of min/max', hour, this.options.minTime, this.options.maxTime);
 		} else if (hour > 24) {
 			console.log('wrong format', hour);
+		} else if (this.intervals.indexOf(minute) < 0) {
+			console.log('minutes not matching interval', minute);
 		} else {
 			this.time = time;
 		}
 
 		/*
 		// If input time does not pass the min/max limits, it will not be applied
-		if (time.length && hour < 24 && (hour > this.options.minTime ||
-			hour < this.options.maxTime)) {
+		if (time.length && hour < 24 && this.intervals.indexOf(minute) >= 0 &&
+			(hour > this.options.minTime || hour < this.options.maxTime)) {
 			this.time = time;
 		}
 		*/
@@ -253,7 +286,7 @@
 		}
 	}
 
-	// Exposed time getter
+	// Time getter returns time as 24h
 	AppointmentPicker.prototype.getTime = function() {
 		return this.time;
 	}
@@ -288,8 +321,6 @@
 			} else {
 				hour = match[1]
 			}
-
-			//var hour = match[3] === 'pm' ? Number(match[1]) + 12 : match[1];
 			return [hour.toString() , match[2]];
 		}
 		return [];
@@ -301,21 +332,19 @@
 	 * @param {String} minute
 	 * @param {String} pattern - used time format
 	 * @param {Boolean} isAmPmMode - false if 24h mode
-	 * @return {String} time string
+	 * @return {String} time string, i.e. '12:30 pm' 
 	 */
 	function _printTime(hour, minute, pattern, isAmPmMode) {
 		var displayminute = _zeroPadTime(minute);
-		var displayHour;
-		//console.log('print time', typeof hour, minute);
+		var displayHour = hour;
+		//console.log('print time', hour, minute);
 
-		if (isAmPmMode && hour > 12) {
-			displayHour = hour - 12;
-		} else if (isAmPmMode && hour == 0) {
-			displayHour = 12;
-		} else {
-			displayHour = hour;
-		}
 		if (isAmPmMode) {
+			if (hour > 12) {
+				displayHour = hour - 12;
+			} else if (hour == 0) {
+				displayHour = 12;
+			}
 			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
 		}
 		return pattern.replace('H', displayHour).replace('M', displayminute);
@@ -325,46 +354,30 @@
 	 * Assemble the html containing each appointment represented by a button
 	 * @param {Object} opt - options (see above)
 	 * @param {Object} tpl - template (see above)
+	 * @param {Array} intervals - array holding interval permutations
 	 */
-	function _assemblePicker(opt, tpl) {
+	function _assemblePicker(opt, tpl, intervals) {
 		var start = opt.startTime;
 		var end = opt.endTime;
-		var times = end * (60 / opt.interval);
 		var inner = '';
-		var hour = 0;
-		var countPerHour = 1;
-		var outer, label;
-		var perHour = 60 / opt.interval;
 		var isAmPmMode = opt.mode === '12h';
 		var timePattern = isAmPmMode ? tpl.time12 : tpl.time24;
 
-		// Iterate all appointment times based on start, end and interval
-		for (var i = 0; i < times; i++) {
-			var isFullHour, minute, timeTemplate;
-			var isDisabled = false;
-
-			isFullHour = perHour === countPerHour;
-			minute = opt.interval * (countPerHour - 1);
-			isDisabled = hour < opt.minTime || hour > opt.maxTime;
-
-			if (start <= hour) {
-				timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode);
-
+		// Iterate hours from starting to ending
+		for (var hour = start; hour < end; hour++) {
+			// Iterate minutes from possible intervals array
+			for (var j = 0; j < intervals.length; j++) {
+				var minute = intervals[j];
+				var isDisabled = hour < opt.minTime || hour > opt.maxTime;
+				var timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode);
 				// Replace timeTemplate placeholders with time and disabled flag
 				inner += tpl.inner
 					.replace('{{time}}', timeTemplate)
 					.replace('{{disabled}}', isDisabled ? 'disabled': '');
 			}
-
-			if (isFullHour) {
-				hour++;
-				countPerHour = 1;
-			} else {
-				countPerHour++;
-			}
 		}
 
-		return outer = tpl.outer
+		return tpl.outer
 			.replace('{{classes}}', opt.large ? 'is-large': '')
 			.replace('{{title}}', opt.title)
 			.replace('{{innerHtml}}', inner);

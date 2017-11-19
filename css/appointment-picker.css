@@ -1,5 +1,5 @@
 /*
- * appointment-picker.css v0.2.0 | MIT License | github.com/jannicz/appointment-picker
+ * appointment-picker.css v0.3.0 | MIT License | github.com/jannicz/appointment-picker
  */
 
 /* Default variation */
@@ -64,6 +64,7 @@
 .appo-picker-list-item input[type="button"]:focus {
     color: #fff;
     background-color: #ff8000;
+    outline: none;
 }
 
 .appo-picker-list-item input[type="button"].is-selected {
