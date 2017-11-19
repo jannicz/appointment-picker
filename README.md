@@ -7,6 +7,8 @@ A lightweight, accessible and customizable javascript timepicker. Accessibility 
  - styling is easy to change
  - comes in 2 variations
  
+ <a href="https://jannicz.github.io/appointment-picker/"><strong>Appointment-Picker Demo</strong></a>
+
  <img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-picker-large.png" width="500" />
 
 # Usage
@@ -55,7 +57,7 @@ The appointment-picker can be configured with options
 - `large` increasesthe size of the picker and the appointments by setting a `is-large` modifier
 - `title` defines the picker's heading
 
-__Note:__ with `startTime` and `endTime` appointment hours can be visually removed. If startTime is greater then minTime a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours then `minTime` and higher then `maxTime`.
+__Note:__ with `startTime` and `endTime` appointment hours can be visually removed. If startTime is greater then minTime a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours then `minTime` and higher then `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no validation is therefore needed. See the [Demo](https://jannicz.github.io/appointment-picker/) to see examples of the options.
 
 Pass the options into the the AppointmentPicker call or the jQuery plugin call
 ```javascript
@@ -126,6 +128,11 @@ if (typeof exports === 'object') {
   root.AppointmentPicker = factory(root);
 }
 ```
+
+# Browser Support
+- Chrome
+- Safari
+
 # Datepair Plugin Example
 
 You can combine this timepicker plugin with PikaDay to have a date time pair combo with similar look & feel:
@@ -133,3 +140,6 @@ You can combine this timepicker plugin with PikaDay to have a date time pair com
 <img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-pikaday.png" width="400" />
 
 Link to Pikaday: https://github.com/dbushell/Pikaday
+
+# Author
+- Jan Suwart
