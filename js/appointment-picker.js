@@ -90,8 +90,12 @@
 		el.addEventListener('focus', _this.openEventFn);
 		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
-		el.addEventListener('keydown', _this.tabKeyUpEventFn);
-	}
+
+		// Polyfil matches selector if missing
+		if (!Element.prototype.matches)
+			Element.prototype.matches = Element.prototype.msMatchesSelector ||
+				Element.prototype.webkitMatchesSelector;
+	};
 
 	// Attach visibility classes and set the picker's position
 	AppointmentPicker.prototype.render = function() {
@@ -120,7 +124,7 @@
 			this.picker.classList.remove('is-open');
 			this.el.setAttribute('aria-expanded', false);
 		}
-	}
+	};
 
 	/**
 	 * Opens the picker, registers further click events
@@ -141,9 +145,10 @@
 		var _this = this;
 		// Delay document click listener to prevent picker flashing
 		setTimeout(function() {	
-			document.addEventListener('click', _this.closeEventFn);
+			document.body.addEventListener('click', _this.closeEventFn);
+			document.body.addEventListener('focus', _this.tabKeyUpEventFn, true);
 		}, 100);
-	}
+	};
 
 	/**
 	 * Close the picker and unregister attached events
@@ -151,6 +156,8 @@
 	 */
 	AppointmentPicker.prototype.close = function(e) {
 		if (!this.isOpen) return;
+
+		console.log('close', Element.prototype.matches);
 
 		if (e) {
 			var el = e.target;
@@ -170,8 +177,9 @@
 
 		this.picker.removeEventListener('click', this.selectionEventFn);
 		this.picker.removeEventListener('keyup', this.keyEventFn);
-		document.removeEventListener('click', this.closeEventFn);
-	}
+		document.body.removeEventListener('click', this.closeEventFn);
+		document.body.removeEventListener('focus', this.tabKeyUpEventFn, true);
+	};
 
 	/**
 	 * Listener for an appointment selection
@@ -183,13 +191,13 @@
 
 		this.setTime(e.target.value);
 		this.el.focus();
-		setTimeout(_this.close(), 100);
-	}
+		setTimeout(_this.close(null), 100);
+	};
 
 	// Handles manual input changes on input field
 	AppointmentPicker.prototype.onchange = function(e) {
 		this.setTime(this.el.value);
-	}
+	};
 
 	/**
 	 * Move focus forward and backward on keyboard arrow key, close picker on ESC
@@ -197,32 +205,39 @@
 	 */
 	AppointmentPicker.prototype.onKeyPress = function(e) {
 		var first = this.picker.querySelector('input[type="button"]');
-		var selected = this.picker.querySelector('input:focus') ||
-			this.picker.querySelector('input.is-selected');
+		var selected = this.picker.querySelector('input.is-selected');
 		var next = null;
 
 		switch (e.keyCode) {
-			case 27:
-				this.close();
+			case 13: // Enter
+			case 27: // ESC
+				this.close(null);
 				break;
-			case 37:
-			case 38:
+			case 37: // Left
+			case 38: // Top
 				next = selected ? selected.parentNode.previousElementSibling : first.parentNode;
 				break;
-			case 39:
-			case 40:
+			case 39: // Right
+			case 40: // Bottom
 				next = selected ? selected.parentNode.nextElementSibling : first.parentNode;
 				break;
 			default:
 		}
 
-		if (next) next.firstChild.focus();
-	}
+		if (next && !next.firstChild.disabled) {
+			next.firstChild.classList.add('is-selected');
+			if (selected)
+				selected.classList.remove('is-selected');
+			this.setTime(next.firstChild.value);
+		}
+	};
 
-	// Close the picker on a TAB key event
+	// Close the picker on document focus, usually by hitting TAB
 	AppointmentPicker.prototype.onTabKeyUp = function(e) {
-		if (e.keyCode === 9) this.close(e);
-	}
+		if (!this.isOpen) return;
+		console.log('focus body', e);
+		this.close(e);
+	};
 
 	// Create a dom node containing the markup for the picker
 	AppointmentPicker.prototype.build = function() {
@@ -231,11 +246,10 @@
 		node.className = ('appo-picker' + (this.options.large ? ' is-large' : ''));
 		this.el.insertAdjacentElement('afterend', node);
 		return node;
-	}
+	};
 
 	// Remove the picker's node from the dom and unregister all events
 	AppointmentPicker.prototype.destroy = function() {
-		console.log('destroy the picker', this.picker);
 		this.close(null);
 
 		if (this.picker) {
@@ -243,8 +257,9 @@
 			this.picker = null;
 		}
 		this.el.removeEventListener('focus', this.openEventFn);
-		this.el.removeEventListener('keyup', this.tabkeyEventFn);
-	}
+		this.el.removeEventListener('keyup', this.keyEventFn);
+		this.el.removeEventListener('change', this.changeEventFn);
+	};
 
 	/**
 	 * Sets the pickers current time variable after validating for min/max
@@ -260,7 +275,7 @@
 		//console.log('time to set', time, 'hour', hour, 'is24h', is24h);
 
 		if (!time.length) {
-			console.log('wrong format');
+			console.log('wrong format, value =>', value, 'time =>', time);
 		} else if (hour < this.options.minTime || hour > this.options.maxTime) {
 			console.log('hour out of min/max', hour, this.options.minTime, this.options.maxTime);
 		} else if (hour > 24) {
@@ -284,12 +299,12 @@
 			this.displayTime = _printTime(this.time[0], this.time[1], timePattern, !is24h);
 			this.el.value = this.displayTime;
 		}
-	}
+	};
 
 	// Time getter returns time as 24h
 	AppointmentPicker.prototype.getTime = function() {
 		return this.time;
-	}
+	};
 
 	/**
 	 * Add a leading zero and convert to string
@@ -300,7 +315,7 @@
 		if (/^[0-9]{1}$/.test(number))
 			return '0' + number;
 		return number;
-	}
+	};
 
 	/**
 	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM '
@@ -324,7 +339,7 @@
 			return [hour.toString() , match[2]];
 		}
 		return [];
-	}
+	};
 
 	/**
 	 * Create time considering am/pm conventions
@@ -335,7 +350,7 @@
 	 * @return {String} time string, i.e. '12:30 pm' 
 	 */
 	function _printTime(hour, minute, pattern, isAmPmMode) {
-		var displayminute = _zeroPadTime(minute);
+		var displayMinute = _zeroPadTime(minute);
 		var displayHour = hour;
 		//console.log('print time', hour, minute);
 
@@ -347,8 +362,8 @@
 			}
 			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
 		}
-		return pattern.replace('H', displayHour).replace('M', displayminute);
-	}
+		return pattern.replace('H', displayHour).replace('M', displayMinute);
+	};
 
 	/**
 	 * Assemble the html containing each appointment represented by a button
@@ -381,7 +396,7 @@
 			.replace('{{classes}}', opt.large ? 'is-large': '')
 			.replace('{{title}}', opt.title)
 			.replace('{{innerHtml}}', inner);
-	}
+	};
 
 	return AppointmentPicker;
 }));
