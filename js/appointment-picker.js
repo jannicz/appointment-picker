@@ -297,6 +297,7 @@
 			this.displayTime = '';
 			this.el.value = this.displayTime;
 		}
+		//this.el.dispatchEvent();
 	};
 
 	// Time getter returns time as 24h

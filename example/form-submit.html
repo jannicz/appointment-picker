@@ -3,11 +3,73 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="author" content="Jan Suwart">
-	<title>Appointment Picker</title>
+	<title>Appointment Picker  Examples</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">
 		html {
-		  font-family: Helvetica, Arial, sans-serif;
+		 	margin: 0;
+		 	padding: 0;
+	      	box-sizing: border-box;
+		}
+		body {
+			font-family: Helvetica, Arial, sans-serif;
+		    font-size: 16px;
+		    line-height: 1.5;
+		    margin: 0;
+		    color: #24292e;	
+		}
+		article {
+			max-width: 768px;
+			padding: 45px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			margin: 20px;
+		    margin-left: auto;
+		    margin-right: auto;
+		}
+		h1, h2, h3 {
+			padding-bottom: 0.3em;
+			border-bottom: 1px solid #ddd;
+			font-weight: 600;
+		}
+		h1 {
+			font-size: 2em;
+		}
+		h2 {
+			font-size: 1.5em;
+		}
+		h3 {
+			font-size: 1.25em;
+		}
+		p {
+		    margin-top: 5px;
+    		margin-bottom: 15px;
+		}
+		a {
+			color: steelblue;
+			text-decoration: none;
+		}
+		button, input, select {
+			font-size: 14px;
+			line-height: 1.5;
+		}
+		label {
+			font-size: 85%;
+			font-weight: 600;
+		}
+		pre {
+			padding: 15px;
+			margin: 0;
+			border-radius: 3px;
+			font-size: 85%;
+			line-height: 1.45;
+			background-color: lavender;
+	        font-family: Courier, monospace;
+	        overflow: auto;
+		}
+		small {
+			font-size: 80%;
+			color: #333;
 		}
 	</style>
 	<link rel="stylesheet" href="../css/appointment-picker.css">
@@ -15,13 +77,18 @@
 	<script src="../js/appointment-picker.js"></script>
 </head>
 <body>
-	<h1>Appointment Picker Example: Form</h1>
+	<article>
+	<h1>Appointment Picker Examples</h1>
 
 	<form action="#" method="GET">
-		<h2>Submit the form to see GET parameters</h2>
+		<h2>Required inside form tag</h2>
+		<p>
+			Submit the form to see GET parameters in the URL
+		</p>
 		<p>
 			<label for="time-form">Time</label>
-			<input id="time-form" type="text" name="time-form" value="" aria-expanded="false" aria-label="Use up or down arrow keys to change time" required="">
+			<input id="time-form" type="text" name="time-form" value="" aria-expanded="false" aria-label="Use up or down arrow keys to change time" required>
+			<pre>&lt;input required id="time-form" type="text" name="time-form" value="" aria-expanded="false" aria-label="Use up or down arrow keys to change time"&gt;</pre>
 		</p>
 
 		<button type="submit">Submit</button>
@@ -34,6 +101,7 @@
 			});
 		</script>
 	</form>
+	</article>
 
 	<p><small>Copyright Jan Suwart, MIT license</small></p>
 	</body>

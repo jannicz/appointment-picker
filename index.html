@@ -7,7 +7,69 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">
 		html {
-		  font-family: Helvetica, Arial, sans-serif;
+		 	margin: 0;
+		 	padding: 0;
+	      	box-sizing: border-box;
+		}
+		body {
+			font-family: Helvetica, Arial, sans-serif;
+		    font-size: 16px;
+		    line-height: 1.5;
+		    margin: 0;
+		    color: #24292e;	
+		}
+		article {
+			max-width: 768px;
+			padding: 45px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			margin: 20px;
+		    margin-left: auto;
+		    margin-right: auto;
+		}
+		h1, h2, h3 {
+			padding-bottom: 0.3em;
+			border-bottom: 1px solid #ddd;
+			font-weight: 600;
+		}
+		h1 {
+			font-size: 2em;
+		}
+		h2 {
+			font-size: 1.5em;
+		}
+		h3 {
+			font-size: 1.25em;
+		}
+		p {
+		    margin-top: 5px;
+    		margin-bottom: 15px;
+		}
+		a {
+			color: steelblue;
+			text-decoration: none;
+		}
+		button, input, select {
+			font-size: 14px;
+			line-height: 1.5;
+		}
+		label {
+			font-size: 85%;
+			font-weight: 600;
+		}
+		pre {
+			padding: 15px;
+			margin: 0;
+			border-radius: 3px;
+			font-size: 85%;
+			line-height: 1.45;
+			background-color: lavender;
+	        font-family: Courier, monospace;
+	        overflow: auto;
+		}
+		small {
+			font-size: 80%;
+			color: #333;
 		}
 	</style>
 	<link rel="stylesheet" href="css/appointment-picker.css">
@@ -15,25 +77,36 @@
 	<script src="js/appointment-picker.js"></script>
 </head>
 <body>
+	<article>
+	
 	<h1>Appointment Picker</h1>
 
 	<p>A lightweight, accessible and customizable javascript timepicker.</p>
-	<p><a href="https://github.com/jannicz/appointment-picker">
-			<strong>Appointment-Picker source on Github</strong></a></p>
+	<p>
+		<a href="https://github.com/jannicz/appointment-picker">
+			<strong>Appointment-Picker source on Github</strong>
+		</a>
+	</p>
 
-	<h2>Default Options, jQuery</h2>
+	<h2>Default (jQuery)</h2>
 	<p>
 		<label for="time-1">Time</label>
 		<input id="time-1" type="text" placeholder="hh:mm" aria-expanded="false" aria-label="Use up or down arrow keys to change time">
-		<button id="remove-1">Destroy</button>
+		<pre>var $picker = $('#time-1').appointmentPicker();</pre>
 	</p>
 
-	<h2>24h mode, 15min intervall, time limits, is-large, jQuery</h2>
+	<h2>Large w/ options (jQuery)</h2>
 	<p>
 		<label for="time-2">Time</label>
 		<input id="time-2" type="text" value="11:15" placeholder="hh:mm" aria-expanded="false" aria-label="Use up or down arrow keys to change time">
-		<button id="open-2">Open</button>
-		<button id="set-2">Set 14:30</button>
+		<pre>
+var $picker2 = $('#time-2').appointmentPicker({
+	title: 'Timepicker',
+	interval: 15,
+	startTime: 10,
+	endTime: 16,
+	large: true
+});</pre>
 	</p>
 
 	<script type="text/javascript">
@@ -45,40 +118,44 @@
 
 		var $picker = $('#time-1').appointmentPicker();
 
-		$('#remove-1').on('click', function() {
-			// Access the picker instance of the jQuery object and call the destroy function 
-			$picker.appointmentPicker.destroy();
-		});
-
 		var $picker2 = $('#time-2').appointmentPicker({
 			title: 'Timepicker',
 			interval: 15,
-			minTime: 11,
-			maxTime: 18,
 			startTime: 10,
-			endTime: 18,
+			endTime: 16,
 			large: true
-		});
-
-		$('#open-2').on('click', function() {
-			$picker2.appointmentPicker.open();
-		});
-		$('#set-2').on('click', function() {
-			$picker2.appointmentPicker.setTime('14:30');
-			$picker2.appointmentPicker.open();
 		});
 	</script>
 
-	<h2>12h mode, 30min intervall</h2>
+	<h2>am/pm w/ options (vanilla-js)</h2>
 	<p>
 		<label for="time-3">Time</label>
 		<input id="time-3" type="text" value="2:30 pm" placeholder="h:mm am" aria-expanded="false" aria-label="Use up or down arrow keys to change time">
+		<pre>
+var picker = new AppointmentPicker(document.getElementById('time-3'), {
+	interval: 30,
+	mode: '12h',
+	minTime: 09,
+	maxTime: 22,
+	startTime: 08,
+	endTime: 24
+});</pre>
 	</p>
 
-	<h2>12h mode, is-large, start end without limitation</h2>
+	<h2>am/pm large w/ options (vanilla-js)</h2>
 	<p>
 		<label for="time-4">Time</label>
 		<input id="time-4" type="text" value="12:00 pm" placeholder="h:mm am" aria-expanded="false" aria-label="Use up or down arrow keys to change time">
+		<pre>
+new AppointmentPicker(document.getElementById('time-4'), {
+	interval: 30,
+	mode: '12h',
+	startTime: 10,
+	endTime: 18,
+	minTime: 11,
+	maxTime: 18,
+	large: true
+});</pre>
 	</p>
 
 	<script type="text/javascript">
@@ -91,13 +168,13 @@
 			endTime: 24
 		});
 
-		console.log('Get time from picker 3 =>', picker.getTime());
-
 		new AppointmentPicker(document.getElementById('time-4'), {
 			interval: 30,
 			mode: '12h',
 			startTime: 10,
 			endTime: 18,
+			minTime: 11,
+			maxTime: 18,
 			large: true
 		});
 	</script>
@@ -105,11 +182,14 @@
 	<p>
 		<h3>More Examples</h3>
 		<ul>
-			<li><a href="example/form-submit.html">Form example</a></li>
+			<li><a href="example/form-submit.html">Form embed example</a></li>
+			<li><a href="example/exposed-functions.html">Calling exposed functions</a></li>
 		</ul>
 	</p>
 
 	<p>Report bugs or feature requests on <a href="https://github.com/jannicz/appointment-picker/issues">Github Issues</a></p>
+	
 	<p><small>Copyright Jan Suwart, MIT license</small></p>
+	</article>
 </body>
 </html>
