@@ -2,7 +2,7 @@
  * Appointment-Picker
  *
  * @module Appointment-Picker
- * @version 0.3.0
+ * @version 0.4.0
  *
  * @author Jan Suwart
 */
@@ -90,11 +90,6 @@
 		el.addEventListener('focus', _this.openEventFn);
 		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
-
-		// Polyfil matches selector if missing
-		if (!Element.prototype.matches)
-			Element.prototype.matches = Element.prototype.msMatchesSelector ||
-				Element.prototype.webkitMatchesSelector;
 	};
 
 	// Attach visibility classes and set the picker's position
@@ -157,7 +152,12 @@
 	AppointmentPicker.prototype.close = function(e) {
 		if (!this.isOpen) return;
 
-		console.log('close', Element.prototype.matches);
+		// Polyfil matches selector if missing
+		if (!Element.prototype.matches)
+			Element.prototype.matches = Element.prototype.msMatchesSelector ||
+				Element.prototype.webkitMatchesSelector;
+
+		//console.log('close', Element.prototype.matches);
 
 		if (e) {
 			var el = e.target;
@@ -191,7 +191,7 @@
 
 		this.setTime(e.target.value);
 		this.el.focus();
-		setTimeout(_this.close(null), 100);
+		setTimeout(function() { _this.close(null); }, 100);
 	};
 
 	// Handles manual input changes on input field
@@ -204,7 +204,7 @@
 	 * @param {Event} e - keyboard event
 	 */
 	AppointmentPicker.prototype.onKeyPress = function(e) {
-		var first = this.picker.querySelector('input[type="button"]');
+		var first = this.picker.querySelector('input[type="button"]:not([disabled])');
 		var selected = this.picker.querySelector('input.is-selected');
 		var next = null;
 
@@ -213,12 +213,10 @@
 			case 27: // ESC
 				this.close(null);
 				break;
-			case 37: // Left
-			case 38: // Top
+			case 38: // Up Arrow
 				next = selected ? selected.parentNode.previousElementSibling : first.parentNode;
 				break;
-			case 39: // Right
-			case 40: // Bottom
+			case 40: // Down Arrow
 				next = selected ? selected.parentNode.nextElementSibling : first.parentNode;
 				break;
 			default:
@@ -267,36 +265,36 @@
 	 */
 	AppointmentPicker.prototype.setTime = function(value) {
 		var time = _parseTime(value);
-		var hour = time[0];
-		var minute = Number(time[1]);
 		var is24h = this.options.mode === '24h';
 		var timePattern = is24h ? this.template.time24 : this.template.time12;
-		
-		//console.log('time to set', time, 'hour', hour, 'is24h', is24h);
 
-		if (!time.length) {
-			console.log('wrong format, value =>', value, 'time =>', time);
-		} else if (hour < this.options.minTime || hour > this.options.maxTime) {
-			console.log('hour out of min/max', hour, this.options.minTime, this.options.maxTime);
-		} else if (hour > 24) {
-			console.log('wrong format', hour);
-		} else if (this.intervals.indexOf(minute) < 0) {
-			console.log('minutes not matching interval', minute);
+		// Pattern match, validate for min/max limits
+		if (time && time.length) {
+			var hour = Number(time[0]);
+			var minute = Number(time[1]);
+			
+			console.log('time to set', time, 'hour', hour, 'is24h', is24h);
+
+			if (hour < this.options.minTime || hour > this.options.maxTime || hour > 24) {
+				console.log('hour out of min/max', hour, this.options.minTime, this.options.maxTime);
+				this.el.value = this.displayTime;
+			} else if (this.intervals.indexOf(minute) < 0) {
+				console.log('minutes not matching interval', minute);
+				this.el.value = this.displayTime;
+			} else {
+				this.time = time;
+				this.displayTime = _printTime(this.time[0], this.time[1], timePattern, !is24h);
+				this.el.value = this.displayTime;
+			}
+		} else if (!time && value) {
+			console.log('unrecognized =>', value);
+			// Unrecognized string, keep old time
+			this.el.value = this.displayTime;
 		} else {
-			this.time = time;
-		}
-
-		/*
-		// If input time does not pass the min/max limits, it will not be applied
-		if (time.length && hour < 24 && this.intervals.indexOf(minute) >= 0 &&
-			(hour > this.options.minTime || hour < this.options.maxTime)) {
-			this.time = time;
-		}
-		*/
-
-		// Set the time both as currentTime and as input value
-		if (this.time.length) {
-			this.displayTime = _printTime(this.time[0], this.time[1], timePattern, !is24h);
+			// Empty string, reset time
+			console.log('empty string');
+			this.time = [];
+			this.displayTime = '';
 			this.el.value = this.displayTime;
 		}
 	};
@@ -319,7 +317,7 @@
 
 	/**
 	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM '
-	 * @returns {Array} containing [hour, minute]
+	 * @returns {Array|undefined} containing [hour, minute] or undefined if unrecognized
 	 * @see https://regexr.com/3h7bo  
 	 */
 	function _parseTime(time) {
@@ -327,7 +325,7 @@
 		var hour;
 
 		if (match) {
-			console.log('parse time, match =>', match);
+			//console.log('parse time, match =>', match);
 
 			if (match[3] === 'pm' && match[1] !== '12') {
 				hour = Number(match[1]) + 12;
@@ -338,21 +336,21 @@
 			}
 			return [hour.toString() , match[2]];
 		}
-		return [];
+		return undefined;
 	};
 
 	/**
 	 * Create time considering am/pm conventions
-	 * @param {String} hour 
-	 * @param {String} minute
+	 * @param {Number} hour 
+	 * @param {Number} minute
 	 * @param {String} pattern - used time format
 	 * @param {Boolean} isAmPmMode - false if 24h mode
 	 * @return {String} time string, i.e. '12:30 pm' 
 	 */
 	function _printTime(hour, minute, pattern, isAmPmMode) {
-		var displayMinute = _zeroPadTime(minute);
 		var displayHour = hour;
-		//console.log('print time', hour, minute);
+		
+		console.log('print time', hour, minute, pattern, isAmPmMode);
 
 		if (isAmPmMode) {
 			if (hour > 12) {
@@ -362,7 +360,8 @@
 			}
 			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
 		}
-		return pattern.replace('H', displayHour).replace('M', displayMinute);
+
+		return pattern.replace('H', displayHour).replace('M', _zeroPadTime(minute));
 	};
 
 	/**

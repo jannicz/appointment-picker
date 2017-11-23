@@ -8,13 +8,12 @@
     position: absolute;
     display: none;
     background-color: white;
-    max-height: 260px;
     max-width: 240px;
     padding: 10px;
     border: 1px solid #ccc;
     box-shadow: 0 5px 15px -5px #ccc;
     z-index: 9999;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 .appo-picker.is-open {
@@ -34,13 +33,10 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    max-height: 220px;
     max-width: 240px;
     padding: 0;
     margin: 0;
     list-style-type: none;
-    overflow-x: hidden;
-    overflow-y: scroll;
 }
 
 .appo-picker-list-item {
@@ -87,7 +83,6 @@
 /* Large variation */
 
 .appo-picker.is-large {
-    max-height: 420px;
     max-width: 420px;
     padding: 40px;
     box-shadow: 0 5px 15px 0 #ccc;
@@ -99,7 +94,6 @@
 }
 
 .appo-picker.is-large .appo-picker-list {
-    max-height: 300px;
     max-width: 340px;
 }
 
