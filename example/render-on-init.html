@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="Jan Suwart">
+	<title>Appointment Picker Examples</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="demo.css">
+	<link rel="stylesheet" href="../css/appointment-picker.css">
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="../js/appointment-picker.js"></script>
+	<style type="text/css">
+		.appo-picker {
+		    max-width: 100%;
+		    border: none;
+		    box-shadow: none;
+		}
+		.appo-picker-list {
+			max-width: 100%;
+		}
+		.appo-picker-list-item {
+			width: 10%;
+		}
+	</style>
+</head>
+<body>
+	<article>
+		<h1>Appointment Picker Examples</h1>
+
+		<h2>Render on init</h2>
+		<p>
+			<label for="time">Time</label>
+			<input id="time" type="text" value="" placeholder="hh:mm" aria-label="Use up or down arrow keys to change time" aria-live="assertive">
+		</p>
+
+		<p>
+			Pass <code>static</code> as true to have the picker node rendered on initialization
+		</p>
+
+<pre>new AppointmentPicker(document.getElementById('time'), {
+	interval: 5,
+	static: true,
+	startTime: 10,
+	endTime: 18,
+});</pre>
+
+		<script type="text/javascript">
+			new AppointmentPicker(document.getElementById('time'), {
+				interval: 5,
+				static: true,
+				startTime: 10,
+				endTime: 18,
+				title: 'Appointments'
+			});
+		</script>
+	</article>
+
+	<p><small>Copyright Jan Suwart, MIT license</small></p>
+	</body>
+</html>

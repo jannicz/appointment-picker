@@ -1,5 +1,5 @@
 /**
- * Appointment-Picker
+ * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
  * @version 0.4.0
@@ -33,6 +33,7 @@
 			endTime: 24, // max displayed hour (1-24)
 			mode: '24h', // Whether to use 24h or 12h system
 			large: false, // Whether large button style
+			static: false, // Whether to position static (always open)
 			title: 'Pick a time'
 		};
 		this.template = {
@@ -84,10 +85,17 @@
 		for (var j = 0; j < 60 / _this.options.interval; j++) {
 			_this.intervals[j] = j * _this.options.interval;
 		}
-
+		if (!_this.options.static) {
+			el.addEventListener('focus', _this.openEventFn);
+		} else {
+			// Render the picker in position static, don't register onOpen event
+			_this.picker = _this.build();
+			_this.picker.classList.add('is-position-static');
+			_this.picker.addEventListener('click', _this.selectionEventFn);
+			_this.isInDom = true;
+		}
 		_this.setTime(_this.el.value);
 
-		el.addEventListener('focus', _this.openEventFn);
 		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
 	};
@@ -100,7 +108,6 @@
 			var oldSelectedEl = this.picker.querySelector('input.is-selected');
 
 			this.picker.classList.add('is-open');
-			this.el.setAttribute('aria-expanded', true);
 
 			if (oldSelectedEl) {
 				oldSelectedEl.classList.remove('is-selected');
@@ -117,7 +124,6 @@
 			this.picker.style.left = left + 'px';
 		} else {
 			this.picker.classList.remove('is-open');
-			this.el.setAttribute('aria-expanded', false);
 		}
 	};
 
@@ -156,8 +162,6 @@
 		if (!Element.prototype.matches)
 			Element.prototype.matches = Element.prototype.msMatchesSelector ||
 				Element.prototype.webkitMatchesSelector;
-
-		//console.log('close', Element.prototype.matches);
 
 		if (e) {
 			var el = e.target;
@@ -233,7 +237,6 @@
 	// Close the picker on document focus, usually by hitting TAB
 	AppointmentPicker.prototype.onTabKeyUp = function(e) {
 		if (!this.isOpen) return;
-		console.log('focus body', e);
 		this.close(e);
 	};
 
@@ -242,6 +245,7 @@
 		var node = document.createElement('div');
 		node.innerHTML = _assemblePicker(this.options, this.template, this.intervals);
 		node.className = ('appo-picker' + (this.options.large ? ' is-large' : ''));
+		node.setAttribute('aria-hidden', true);
 		this.el.insertAdjacentElement('afterend', node);
 		return node;
 	};
@@ -268,41 +272,48 @@
 		var is24h = this.options.mode === '24h';
 		var timePattern = is24h ? this.template.time24 : this.template.time12;
 
-		// Pattern match, validate for min/max limits
-		if (time && time.length) {
-			var hour = Number(time[0]);
-			var minute = Number(time[1]);
-			
-			console.log('time to set', time, 'hour', hour, 'is24h', is24h);
-
-			if (hour < this.options.minTime || hour > this.options.maxTime || hour > 24) {
-				console.log('hour out of min/max', hour, this.options.minTime, this.options.maxTime);
-				this.el.value = this.displayTime;
-			} else if (this.intervals.indexOf(minute) < 0) {
-				console.log('minutes not matching interval', minute);
-				this.el.value = this.displayTime;
-			} else {
-				this.time = time;
-				this.displayTime = _printTime(this.time[0], this.time[1], timePattern, !is24h);
-				this.el.value = this.displayTime;
-			}
-		} else if (!time && value) {
-			console.log('unrecognized =>', value);
-			// Unrecognized string, keep old time
-			this.el.value = this.displayTime;
-		} else {
-			// Empty string, reset time
+		if (!time && !value) { // Empty string, reset time
 			console.log('empty string');
 			this.time = [];
 			this.displayTime = '';
-			this.el.value = this.displayTime;
+		} else if (time) {
+			var hour = Number(time[0]);
+			var minute = Number(time[1]);
+			var isValid = _isValid(hour, minute, this.options, this.intervals);
+
+			console.log('time to set', time, 'hour', hour, 'is24h', is24h, 'isValid =>', isValid);
+
+			if (isValid) {
+				this.time = time;
+				this.displayTime = _printTime(this.time[0], this.time[1], timePattern, !is24h);
+				// Trigger an event with attached time property
+				var event = document.createEvent('Event');
+				event.initEvent('change.appo.picker', true, true);
+				event.time = this.time;
+				this.el.dispatchEvent(event);
+			}
 		}
-		//this.el.dispatchEvent();
+		this.el.value = this.displayTime;
 	};
 
 	// Time getter returns time as 24h
 	AppointmentPicker.prototype.getTime = function() {
 		return this.time;
+	};
+
+	/**
+	 * Checks validity using defined constraints
+	 * @returns {Boolean} true if valid
+	 */
+	function _isValid(hour, minute, opt, intervals) {
+		if (hour < opt.minTime || hour > opt.maxTime || hour > 24) {
+			console.log('hour out of min/max', hour, opt.minTime, '/', opt.maxTime);
+			return false;
+		} else if (intervals.indexOf(minute) < 0) {
+			console.log('minutes not matching interval', minute);
+			return false;
+		}
+		return true;
 	};
 
 	/**
@@ -326,8 +337,6 @@
 		var hour;
 
 		if (match) {
-			//console.log('parse time, match =>', match);
-
 			if (match[3] === 'pm' && match[1] !== '12') {
 				hour = Number(match[1]) + 12;
 			} else if (match[3] === 'am' && match[1] === '12') {
@@ -335,6 +344,7 @@
 			} else {
 				hour = match[1]
 			}
+			//console.log('parse time', [hour.toString() , match[2]]);
 			return [hour.toString() , match[2]];
 		}
 		return undefined;
@@ -350,8 +360,6 @@
 	 */
 	function _printTime(hour, minute, pattern, isAmPmMode) {
 		var displayHour = hour;
-		
-		console.log('print time', hour, minute, pattern, isAmPmMode);
 
 		if (isAmPmMode) {
 			if (hour > 12) {
@@ -361,7 +369,6 @@
 			}
 			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
 		}
-
 		return pattern.replace('H', displayHour).replace('M', _zeroPadTime(minute));
 	};
 
@@ -378,10 +385,8 @@
 		var isAmPmMode = opt.mode === '12h';
 		var timePattern = isAmPmMode ? tpl.time12 : tpl.time24;
 
-		// Iterate hours from starting to ending
-		for (var hour = start; hour < end; hour++) {
-			// Iterate minutes from possible intervals array
-			for (var j = 0; j < intervals.length; j++) {
+		for (var hour = start; hour < end; hour++) { // Iterate hours start to end	
+			for (var j = 0; j < intervals.length; j++) { // Iterate minutes by possible intervals
 				var minute = intervals[j];
 				var isDisabled = hour < opt.minTime || hour > opt.maxTime;
 				var timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode);

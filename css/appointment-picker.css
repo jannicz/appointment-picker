@@ -21,6 +21,12 @@
     flex-direction: column;
 }
 
+.appo-picker.is-position-static {
+    display: flex;
+    flex-direction: column;
+    position: static;
+}
+
 .appo-picker-title {
     display: flex;
     justify-content: center;
@@ -42,7 +48,6 @@
 .appo-picker-list-item {
     width: 25%;
     height: 34px;
-    font-size: 12px;
 }
 
 .appo-picker-list-item input[type="button"] {
@@ -54,6 +59,7 @@
     border-width: 1px 1px 0 0;
     border-radius: 5px;
     background-color: #f5f5f5;
+    font-size: 12px;
     color: #666;
     line-height: 15px;
     -webkit-appearance: none;

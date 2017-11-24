@@ -4,14 +4,15 @@ A lightweight, accessible and customizable javascript timepicker. Accessibility 
 
 ## Advantages
  - no dependencies
- - tiny (<6KB minified, <2KB gzipped)
+ - tiny (6KB minified, 2KB gzipped)
  - can be used with or without jQuery
  - styling is easy to change
  - comes in 2 variations
  
- <a href="https://jannicz.github.io/appointment-picker/"><strong>See Appointment-Picker Demo and Examples</strong></a>
-
- <img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-picker-large.png" width="500" />
+ <a href="https://jannicz.github.io/appointment-picker/">
+  <strong>See Appointment-Picker Demo and Examples</strong>
+  <img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-picker-large.png" width="500" />
+ </a>
 
 ## Usage
 Import both the stylesheet and the script
@@ -57,9 +58,10 @@ The appointment-picker can be configured with options
 - `startTime` hides all appointments below this hour, default is `0`
 - `endTime` hides all appointments above this hour, default is `24`
 - `large` increasesthe size of the picker and the appointments by setting a `is-large` modifier
+- `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see demo](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
 - `title` defines the picker's heading
 
-__Note:__ with `startTime` and `endTime` appointment hours can be visually removed. If startTime is greater than minTime a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([Demo](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Putting an empty string into the input resets the time. See the [Demo](https://jannicz.github.io/appointment-picker/) to learn examples of the options.
+__Note:__ with `startTime` and `endTime` appointment hours can be visually removed. If startTime is greater than minTime a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([Demo](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
 
 Pass the options into the the AppointmentPicker call or the jQuery plugin call
 ```javascript
@@ -111,10 +113,9 @@ picker.destroy();
 ```
 
 ## Events
-Appointment-picker exposes events for hooking into the functionality
+Appointment-picker exposes an event for hooking into the functionality. The event `change.appo.picker` contains a property `time` and is triggered on each successful value change ([see event demo](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
 ```javascript
-var picker = new AppointmentPicker(document.getElementById('time-2'), {});
-document.getElementById('time-2').addEventlistener();
+document.body.addEventListener('change.appo.picker', function(e) { var time = e.time; }, false);
 ```
 
 ## Styling

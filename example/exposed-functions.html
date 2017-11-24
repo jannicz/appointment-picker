@@ -5,73 +5,7 @@
 	<meta name="author" content="Jan Suwart">
 	<title>Appointment Picker Examples</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<style type="text/css">
-		html {
-		 	margin: 0;
-		 	padding: 0;
-	      	box-sizing: border-box;
-		}
-		body {
-			font-family: Helvetica, Arial, sans-serif;
-		    font-size: 16px;
-		    line-height: 1.5;
-		    margin: 0;
-		    color: #24292e;	
-		}
-		article {
-			max-width: 768px;
-			padding: 45px;
-			border: 1px solid #ddd;
-			border-radius: 3px;
-			margin: 20px;
-		    margin-left: auto;
-		    margin-right: auto;
-		}
-		h1, h2, h3 {
-			padding-bottom: 0.3em;
-			border-bottom: 1px solid #ddd;
-			font-weight: 600;
-		}
-		h1 {
-			font-size: 2em;
-		}
-		h2 {
-			font-size: 1.5em;
-		}
-		h3 {
-			font-size: 1.25em;
-		}
-		p {
-		    margin-top: 5px;
-    		margin-bottom: 15px;
-		}
-		a {
-			color: steelblue;
-			text-decoration: none;
-		}
-		button, input, select {
-			font-size: 14px;
-			line-height: 1.5;
-		}
-		label {
-			font-size: 85%;
-			font-weight: 600;
-		}
-		pre {
-			padding: 15px;
-			margin: 0;
-			border-radius: 3px;
-			font-size: 85%;
-			line-height: 1.45;
-			background-color: lavender;
-	        font-family: Courier, monospace;
-	        overflow: auto;
-		}
-		small {
-			font-size: 80%;
-			color: #333;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="demo.css">
 	<link rel="stylesheet" href="../css/appointment-picker.css">
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="../js/appointment-picker.js"></script>
@@ -86,7 +20,7 @@
 		</p>
 		<p>
 			<label for="time-2">Time</label>
-			<input id="time-2" type="text" value="11:15" placeholder="hh:mm" aria-expanded="false" aria-label="Use up or down arrow keys to change time">
+			<input id="time-2" type="text" value="11:30" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 			<button id="open-2">Open</button>
 			<button id="set-2">Set 14:30</button>
 			<button id="set-3">Set 18:30</button>
@@ -125,24 +59,44 @@
 
 		<p>
 			<label for="time-3">Time</label>
-			<input id="time-3" type="text" value="2:30 pm" placeholder="h:mm am" aria-expanded="false" aria-label="Use up or down arrow keys to change time">
+			<input id="time-3" type="text" value="12:00" placeholder="h:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 			<pre>
 var picker = new AppointmentPicker(document.getElementById('time-3'), {});
 
-console.log('current time =>', picker.getTime());</pre>
+var time = picker.getTime();</pre>
 		</p>
 
 		<script type="text/javascript">
 			var picker = new AppointmentPicker(document.getElementById('time-3'), {});
-
-			console.log('current time =>', picker.getTime());
+			var time = picker.getTime()
+			console.log('current time =>', time);
 		</script>
+
+		<h2>Get the current time by event listener</h2>
+
+		<p>
+			<label for="time-ev">Time</label>
+			<input id="time-ev" type="text" value="18:00" placeholder="h:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+			<span id="time-ev-out">change the time</span>
+			<pre>
+var picker = new AppointmentPicker(document.getElementById('time-ev'), {});
+
+document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) { // code }, false);</pre>
+
+			<script type="text/javascript">
+				var evPicker = new AppointmentPicker(document.getElementById('time-ev'), {});
+				// Add event listener on input field
+				document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) {
+					document.getElementById('time-ev-out').innerHTML = e.time[0] + ':' + e.time[1];
+				}, false);
+			</script>
+		</p>
 
 		<h2>Destroy the picker</h2>
 
 		<p>
 			<label for="time-1">Time</label>
-			<input id="time-1" type="text" placeholder="hh:mm" aria-expanded="false" aria-label="Use up or down arrow keys to change time">
+			<input id="time-1" type="text" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 			<button id="remove-1">Destroy</button>
 			<pre>
 var $picker = $('#time-1').appointmentPicker();
