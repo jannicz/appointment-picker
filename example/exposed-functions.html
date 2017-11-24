@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="Jan Suwart">
+	<title>Appointment Picker Examples</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="demo.css">
+	<link rel="stylesheet" href="../css/appointment-picker.css">
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="../js/appointment-picker.js"></script>
+</head>
+<body>
+	<article>
+		<h1>Appointment Picker Examples</h1>
+
+		<h2>Calling exposed functions</h2>
+		<p>
+			To open or set and open a time use the buttons
+		</p>
+		<p>
+			<label for="time-2">Time</label>
+			<input id="time-2" type="text" value="11:30" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+			<button id="open-2">Open</button>
+			<button id="set-2">Set 14:30</button>
+			<button id="set-3">Set 18:30</button>
+		</p>
+
+
+		<script type="text/javascript">
+			// To use appointmentPicker as jQuery plugin
+			$.fn.appointmentPicker = function(options) {
+			    this.appointmentPicker = new AppointmentPicker(this[0], options);
+			    return this;
+			};
+
+			var $picker2 = $('#time-2').appointmentPicker({
+				title: 'Timepicker',
+				interval: 30,
+				startTime: 10,
+				endTime: 20,
+				large: true
+			});
+
+			$('#open-2').on('click', function() {
+				$picker2.appointmentPicker.open();
+			});
+			$('#set-2').on('click', function() {
+				$picker2.appointmentPicker.setTime('14:30');
+				$picker2.appointmentPicker.open();
+			});
+			$('#set-3').on('click', function() {
+				$picker2.appointmentPicker.setTime('18:30');
+				$picker2.appointmentPicker.open();
+			});
+		</script>
+
+		<h2>Get the current time</h2>
+
+		<p>
+			<label for="time-3">Time</label>
+			<input id="time-3" type="text" value="12:00" placeholder="h:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+			<pre>
+var picker = new AppointmentPicker(document.getElementById('time-3'), {});
+
+var time = picker.getTime();</pre>
+		</p>
+
+		<script type="text/javascript">
+			var picker = new AppointmentPicker(document.getElementById('time-3'), {});
+			var time = picker.getTime()
+			console.log('current time =>', time);
+		</script>
+
+		<h2>Get the current time by event listener</h2>
+
+		<p>
+			<label for="time-ev">Time</label>
+			<input id="time-ev" type="text" value="18:00" placeholder="h:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+			<span id="time-ev-out">change the time</span>
+			<pre>
+var picker = new AppointmentPicker(document.getElementById('time-ev'), {});
+
+document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) { // code }, false);</pre>
+
+			<script type="text/javascript">
+				var evPicker = new AppointmentPicker(document.getElementById('time-ev'), {});
+				// Add event listener on input field
+				document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) {
+					document.getElementById('time-ev-out').innerHTML = JSON.stringify(e.time);
+				}, false);
+			</script>
+		</p>
+
+		<h2>Destroy the picker</h2>
+
+		<p>
+			<label for="time-1">Time</label>
+			<input id="time-1" type="text" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+			<button id="remove-1">Destroy</button>
+			<pre>
+var $picker = $('#time-1').appointmentPicker();
+
+$('#remove-1').on('click', function() {
+	$picker.appointmentPicker.destroy();
+});</pre>
+
+			<script type="text/javascript">
+				// To use appointmentPicker as jQuery plugin
+				$.fn.appointmentPicker = function(options) {
+				    this.appointmentPicker = new AppointmentPicker(this[0], options);
+				    return this;
+				};
+
+				var $picker = $('#time-1').appointmentPicker();
+
+				$('#remove-1').on('click', function() {
+					// Access the picker instance of the jQuery object and call the destroy function 
+					$picker.appointmentPicker.destroy();
+				});
+			</script>
+		</p>
+	</article>
+
+	<p><small>Copyright Jan Suwart, MIT license</small></p>
+	</body>
+</html>

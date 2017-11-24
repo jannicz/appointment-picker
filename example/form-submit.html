@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="Jan Suwart">
+	<title>Appointment Picker  Examples</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="demo.css">
+	<link rel="stylesheet" href="../css/appointment-picker.css">
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="../js/appointment-picker.js"></script>
+</head>
+<body>
+	<article>
+	<h1>Appointment Picker Examples</h1>
+
+	<form action="#" method="GET">
+		<h2>Required inside form tag</h2>
+		<p>
+			Submit the form to see GET parameters in the URL
+		</p>
+		<p>
+			<label for="time-form">Time</label>
+			<input id="time-form" type="text" name="time-form" value="" aria-live="assertive" autocomplete="off" aria-label="Use up or down arrow keys to change time" required>
+			<pre>&lt;input required id="time-form" type="text" name="time-form" value="" aria-live="assertive" aria-label="Use up or down arrow keys to change time"&gt;</pre>
+		</p>
+
+		<button type="submit">Submit</button>
+
+		<script type="text/javascript">
+			new AppointmentPicker(document.getElementById('time-form'), {
+				interval: 15,
+				startTime: 14,
+				endTime: 18
+			});
+		</script>
+	</form>
+	</article>
+
+	<p><small>Copyright Jan Suwart, MIT license</small></p>
+	</body>
+</html>
