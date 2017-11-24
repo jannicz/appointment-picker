@@ -1,6 +1,6 @@
-# Appointment-Picker - a simple timepicker widget
+# Appointment Picker
 
-A lightweight, accessible and customizable javascript timepicker. Accessibility is based on ARIA states and keyboard support. The styling is kept simple and can be easily modified.
+A lightweight, accessible and customizable javascript timepicker widget. Accessibility is based on ARIA properties and keyboard support. The styling is kept simple and can be easily modified.
 
 ## Advantages
  - no dependencies
@@ -60,7 +60,7 @@ The appointment-picker can be configured with options
 - `maxTime` sets the maximum hour that can be picked, default is `24`
 - `startTime` hides all appointments below this hour, default is `0`
 - `endTime` hides all appointments above this hour, default is `24`
-- `disabled` array of disabled appointments, i.e. ['10:30', '1:15pm', ...] - these times cannot be selected or entered and will be skipped using the keyboard arrows
+- `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increasesthe size of the picker and the appointments by setting a `is-large` modifier
 - `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see demo](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
 - `title` defines the picker's heading
