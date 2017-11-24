@@ -87,7 +87,7 @@ document.getElementById('time-ev').addEventListener('change.appo.picker', functi
 				var evPicker = new AppointmentPicker(document.getElementById('time-ev'), {});
 				// Add event listener on input field
 				document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) {
-					document.getElementById('time-ev-out').innerHTML = e.time[0] + ':' + e.time[1];
+					document.getElementById('time-ev-out').innerHTML = JSON.stringify(e.time);
 				}, false);
 			</script>
 		</p>

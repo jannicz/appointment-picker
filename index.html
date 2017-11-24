@@ -69,10 +69,11 @@ var $picker2 = $('#time-2').appointmentPicker({
 var picker = new AppointmentPicker(document.getElementById('time-3'), {
 	interval: 30,
 	mode: '12h',
-	minTime: 09,
-	maxTime: 22,
-	startTime: 08,
-	endTime: 24
+	minTime: 10,
+	maxTime: 21,
+	startTime: 09,
+	endTime: 23,
+	disabled: ['1:30 pm', '2:00 pm', '7:30 pm', '9:30 pm']
 });</pre>
 	</p>
 
@@ -88,6 +89,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 	endTime: 18,
 	minTime: 11,
 	maxTime: 18,
+	disabled: ['4:30 pm', '5:00 pm'],
 	large: true
 });</pre>
 	</p>
@@ -96,10 +98,11 @@ new AppointmentPicker(document.getElementById('time-4'), {
 		var picker = new AppointmentPicker(document.getElementById('time-3'), {
 			interval: 30,
 			mode: '12h',
-			minTime: 09,
-			maxTime: 22,
-			startTime: 08,
-			endTime: 24
+			minTime: 10,
+			maxTime: 21,
+			startTime: 09,
+			endTime: 23,
+			disabled: ['1:30 pm', '2:00 pm', '7:30 pm', '9:30 pm']
 		});
 
 		new AppointmentPicker(document.getElementById('time-4'), {
@@ -109,6 +112,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			endTime: 18,
 			minTime: 11,
 			maxTime: 18,
+			disabled: ['4:30 pm', '5:00 pm'],
 			large: true
 		});
 	</script>

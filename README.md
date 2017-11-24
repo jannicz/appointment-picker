@@ -9,10 +9,11 @@ A lightweight, accessible and customizable javascript timepicker. Accessibility 
  - styling is easy to change
  - comes in 2 variations
  
- <a href="https://jannicz.github.io/appointment-picker/">
+<a href="https://jannicz.github.io/appointment-picker/">
   <strong>See Appointment-Picker Demo and Examples</strong>
-  <img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-picker-large.png" width="500" />
- </a>
+</a>
+
+<img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-picker-large.png" width="500" alt=""/>
 
 ## Usage
 Import both the stylesheet and the script
@@ -57,6 +58,7 @@ The appointment-picker can be configured with options
 - `maxTime` sets the maximum hour that can be picked, default is `24`
 - `startTime` hides all appointments below this hour, default is `0`
 - `endTime` hides all appointments above this hour, default is `24`
+- `disabled` array of disabled appointments, i.e. ['10:30', '1:15pm', ...] - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increasesthe size of the picker and the appointments by setting a `is-large` modifier
 - `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see demo](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
 - `title` defines the picker's heading
@@ -72,6 +74,7 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
   maxTime: 22,
   startTime: 08,
   endTime: 24,
+  disabled: ['16:30', '17:00'],
   large: true
 });
 
@@ -89,7 +92,7 @@ To get the current time programatically from a picker instance use
 // without jQuery
 picker.getTime();
 // or access the picker instance of the jQuery object
-$picker.appointmentPicker.getTime();
+$picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
 ```
 
 To programatically open a picker instance call

@@ -31,13 +31,14 @@
 			maxTime: 24, // max pickable hour (1-24)
 			startTime: 0, // min displayed hour (1-24)
 			endTime: 24, // max displayed hour (1-24)
+			disabled: [], // Array of disabled times, i.e. ['10:30', ...]
 			mode: '24h', // Whether to use 24h or 12h system
 			large: false, // Whether large button style
 			static: false, // Whether to position static (always open)
 			title: 'Pick a time'
 		};
 		this.template = {
-			inner: '<li class="appo-picker-list-item">' +
+			inner: '<li class="appo-picker-list-item {{disabled}}">' +
 				'<input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
 			outer: '<span class="appo-picker-title">{{title}}</span>' +
 				'<ul class="appo-picker-list">{{innerHtml}}</ul>',
@@ -49,8 +50,9 @@
 		this.picker = null;
 		this.isOpen = false;
 		this.isInDom = false;
-		this.time = []; // ['18', '30']
+		this.time = {}; // { h: '18', m: '30' }
 		this.intervals = []; // [0, 15, 30, 45]
+		this.disabledArr = [];
 		this.displayTime = ''; // '6:30pm'
 		this.selectionEventFn = this.select.bind(this);
 		this.changeEventFn = this.onchange.bind(this);
@@ -81,6 +83,10 @@
 			console.warn('appointment-picker: the maximal interval is 60');
 			return;
 		}
+		// Create 2-dim array holding all disabled times
+		_this.options.disabled.forEach(function(val, i) {
+			_this.disabledArr[i] = _parseTime(_this.options.disabled[i]);
+		});
 		// Create array holding all minute permutations
 		for (var j = 0; j < 60 / _this.options.interval; j++) {
 			_this.intervals[j] = j * _this.options.interval;
@@ -112,7 +118,7 @@
 			if (oldSelectedEl) {
 				oldSelectedEl.classList.remove('is-selected');
 			}
-			if (this.time.length) {
+			if (this.time.hasOwnProperty('h')) {
 				var selectedEl = this.picker.querySelector('[value="' + this.displayTime + '"]');
 				
 				if (selectedEl) {
@@ -218,10 +224,10 @@
 				this.close(null);
 				break;
 			case 38: // Up Arrow
-				next = selected ? selected.parentNode.previousElementSibling : first.parentNode;
+				next = selected ? _getNextSibling(selected.parentNode, -1) : first.parentNode;
 				break;
 			case 40: // Down Arrow
-				next = selected ? selected.parentNode.nextElementSibling : first.parentNode;
+				next = selected ? _getNextSibling(selected.parentNode, 1) : first.parentNode;
 				break;
 			default:
 		}
@@ -243,7 +249,7 @@
 	// Create a dom node containing the markup for the picker
 	AppointmentPicker.prototype.build = function() {
 		var node = document.createElement('div');
-		node.innerHTML = _assemblePicker(this.options, this.template, this.intervals);
+		node.innerHTML = _assemblePicker(this.options, this.template, this.intervals, this.disabledArr);
 		node.className = ('appo-picker' + (this.options.large ? ' is-large' : ''));
 		node.setAttribute('aria-hidden', true);
 		this.el.insertAdjacentElement('afterend', node);
@@ -274,18 +280,18 @@
 
 		if (!time && !value) { // Empty string, reset time
 			console.log('empty string');
-			this.time = [];
+			this.time = {};
 			this.displayTime = '';
 		} else if (time) {
-			var hour = Number(time[0]);
-			var minute = Number(time[1]);
-			var isValid = _isValid(hour, minute, this.options, this.intervals);
+			var hour = time.h;
+			var minute = time.m;
+			var isValid = _isValid(hour, minute, this.options, this.intervals, this.disabledArr);
 
-			console.log('time to set', time, 'hour', hour, 'is24h', is24h, 'isValid =>', isValid);
+			//console.log('time to set', time, 'hour', hour, 'is24h', is24h, 'isValid =>', isValid);
 
 			if (isValid) {
 				this.time = time;
-				this.displayTime = _printTime(this.time[0], this.time[1], timePattern, !is24h);
+				this.displayTime = _printTime(this.time.h, this.time.m, timePattern, !is24h);
 				// Trigger an event with attached time property
 				var event = document.createEvent('Event');
 				event.initEvent('change.appo.picker', true, true);
@@ -305,15 +311,20 @@
 	 * Checks validity using defined constraints
 	 * @returns {Boolean} true if valid
 	 */
-	function _isValid(hour, minute, opt, intervals) {
-		if (hour < opt.minTime || hour > opt.maxTime || hour > 24) {
+	function _isValid(hour, minute, opt, intervals, disabledArr) {
+		var inDisabledArr = false;
+		if (hour < opt.minTime || hour > opt.maxTime || hour > 24) { // Out of min/max
 			console.log('hour out of min/max', hour, opt.minTime, '/', opt.maxTime);
 			return false;
-		} else if (intervals.indexOf(minute) < 0) {
+		} else if (intervals.indexOf(minute) < 0) { // Min doesn't match any interval
 			console.log('minutes not matching interval', minute);
 			return false;
 		}
-		return true;
+		disabledArr.forEach(function(item, i) { // h:m combination in disabled array
+			if (item.h === hour && item.m === minute)
+				inDisabledArr = true;
+		});
+		return !inDisabledArr ? true : false; // All valid
 	};
 
 	/**
@@ -329,7 +340,7 @@
 
 	/**
 	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM '
-	 * @returns {Array|undefined} containing [hour, minute] or undefined if unrecognized
+	 * @returns {Object|undefined} containing {h: hour, m: minute} or undefined if unrecognized
 	 * @see https://regexr.com/3h7bo  
 	 */
 	function _parseTime(time) {
@@ -345,7 +356,7 @@
 				hour = match[1]
 			}
 			//console.log('parse time', [hour.toString() , match[2]]);
-			return [hour.toString() , match[2]];
+			return { h: Number(hour), m: Number(match[2]) };
 		}
 		return undefined;
 	};
@@ -372,13 +383,26 @@
 		return pattern.replace('H', displayHour).replace('M', _zeroPadTime(minute));
 	};
 
+	// Find next sibling of item that is not disabled (otherwise return null)
+	function _getNextSibling(item, direction) {
+		if (!item) return null; // Break condition for recursion
+
+		var next = direction < 0 ? item.previousElementSibling : item.nextElementSibling;
+		if (next && next.className.indexOf('disabled') < 0) {
+			return next;
+		} else { // If .disabled found, try the next sibling
+			return _getNextSibling(next, direction);
+		}
+	};
+
 	/**
 	 * Assemble the html containing each appointment represented by a button
 	 * @param {Object} opt - options (see above)
 	 * @param {Object} tpl - template (see above)
 	 * @param {Array} intervals - array holding interval permutations
+	 * @param {Array} disabledArr - array holding disabled times
 	 */
-	function _assemblePicker(opt, tpl, intervals) {
+	function _assemblePicker(opt, tpl, intervals, disabledArr) {
 		var start = opt.startTime;
 		var end = opt.endTime;
 		var inner = '';
@@ -388,12 +412,12 @@
 		for (var hour = start; hour < end; hour++) { // Iterate hours start to end	
 			for (var j = 0; j < intervals.length; j++) { // Iterate minutes by possible intervals
 				var minute = intervals[j];
-				var isDisabled = hour < opt.minTime || hour > opt.maxTime;
+				var isDisabled = !_isValid(hour, minute, opt, intervals, disabledArr);
 				var timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode);
 				// Replace timeTemplate placeholders with time and disabled flag
 				inner += tpl.inner
 					.replace('{{time}}', timeTemplate)
-					.replace('{{disabled}}', isDisabled ? 'disabled': '');
+					.replace(/{{disabled}}/ig, isDisabled ? 'disabled': '');
 			}
 		}
 
