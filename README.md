@@ -13,7 +13,9 @@ A lightweight, accessible and customizable javascript timepicker. Accessibility 
   <strong>See Appointment-Picker Demo and Examples</strong>
 </a>
 
-<img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-picker-large.png" width="500" alt=""/>
+<p>
+  <img src="example/appointment-picker-large.png" width="550" alt=""/>
+</p>
 
 ## Usage
 Import both the stylesheet and the script
@@ -52,7 +54,7 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {});
 
 ## Options
 The appointment-picker can be configured with options
-- `interval` sets the interval between appointments in minutes (1-60), if this number gets lower (more possible appointments) the picker will get longer
+- `interval` sets the interval between appointments in minutes (`1-60`), if this number gets lower (more possible appointments) the picker will get longer
 - `mode` the picker can be used in standard `24h` hour mode or in `12h` mode - the latter uses am/pm postfix
 - `minTime` sets the minimum hour that can be picked, default is `0` what is eqivalent to 12am
 - `maxTime` sets the maximum hour that can be picked, default is `24`
@@ -152,7 +154,7 @@ if (typeof exports === 'object') {
 
 You can combine this timepicker plugin with PikaDay to have a date time pair combo with similar look & feel:
 
-<img src="https://github.com/jannicz/appointment-picker/blob/develop/example/appointment-pikaday.png" width="400" />
+<img src="example/appointment-pikaday.png" width="400" />
 
 Link to Pikaday: https://github.com/dbushell/Pikaday
 
