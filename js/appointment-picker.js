@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.0
+ * @version 1.0.1
  *
  * @author Jan Suwart
 */
@@ -35,7 +35,7 @@
 			mode: '24h', // Whether to use 24h or 12h system
 			large: false, // Whether large button style
 			static: false, // Whether to position static (always open)
-			title: 'Pick a time'
+			title: 'Timepicker'
 		};
 		this.template = {
 			inner: '<li class="appo-picker-list-item {{disabled}}">' +
@@ -74,7 +74,6 @@
 		for (var opt in options) {
 			_this.options[opt] = options[opt];
 		}
-
 		if (!_this.el) return;
 		if (_this.el.length !== undefined) {
 			console.warn('appointment-picker: pass only one dom element as argument');
@@ -91,6 +90,7 @@
 		for (var j = 0; j < 60 / _this.options.interval; j++) {
 			_this.intervals[j] = j * _this.options.interval;
 		}
+
 		if (!_this.options.static) {
 			el.addEventListener('focus', _this.openEventFn);
 		} else {
@@ -100,8 +100,8 @@
 			_this.picker.addEventListener('click', _this.selectionEventFn);
 			_this.isInDom = true;
 		}
-		_this.setTime(_this.el.value);
 
+		_this.setTime(_this.el.value);
 		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
 	};
@@ -125,7 +125,6 @@
 					selectedEl.classList.add('is-selected');
 				}
 			}
-
 			this.picker.style.top = bottom + 'px';
 			this.picker.style.left = left + 'px';
 		} else {
@@ -138,18 +137,18 @@
 	 * @param {Event} e - some event
 	 */
 	AppointmentPicker.prototype.open = function(e) {
+		var _this = this;
+
 		if (this.isOpen) return;
+
 		if (!this.isInDom) {
 			this.picker = this.build();
 			this.isInDom = true;
 		}
 		this.isOpen = true;
 		this.render();
-		
 		this.picker.addEventListener('click', this.selectionEventFn);
 		this.picker.addEventListener('keyup', this.keyEventFn);
-
-		var _this = this;
 		// Delay document click listener to prevent picker flashing
 		setTimeout(function() {	
 			document.body.addEventListener('click', _this.closeEventFn);
@@ -168,7 +167,6 @@
 		if (!Element.prototype.matches)
 			Element.prototype.matches = Element.prototype.msMatchesSelector ||
 				Element.prototype.webkitMatchesSelector;
-
 		if (e) {
 			var el = e.target;
 			// Check if the clicked target is inside the picker
@@ -180,7 +178,6 @@
 				}
 			}
 		}
-
 		// The target was outside or didn't exist, close picker
 		this.isOpen = false;
 		this.render();
@@ -279,15 +276,12 @@
 		var timePattern = is24h ? this.template.time24 : this.template.time12;
 
 		if (!time && !value) { // Empty string, reset time
-			console.log('empty string');
 			this.time = {};
 			this.displayTime = '';
 		} else if (time) {
 			var hour = time.h;
 			var minute = time.m;
 			var isValid = _isValid(hour, minute, this.options, this.intervals, this.disabledArr);
-
-			//console.log('time to set', time, 'hour', hour, 'is24h', is24h, 'isValid =>', isValid);
 
 			if (isValid) {
 				this.time = time;
@@ -314,10 +308,8 @@
 	function _isValid(hour, minute, opt, intervals, disabledArr) {
 		var inDisabledArr = false;
 		if (hour < opt.minTime || hour > opt.maxTime || hour > 24) { // Out of min/max
-			console.log('hour out of min/max', hour, opt.minTime, '/', opt.maxTime);
 			return false;
 		} else if (intervals.indexOf(minute) < 0) { // Min doesn't match any interval
-			console.log('minutes not matching interval', minute);
 			return false;
 		}
 		disabledArr.forEach(function(item, i) { // h:m combination in disabled array
@@ -355,7 +347,6 @@
 			} else {
 				hour = match[1]
 			}
-			//console.log('parse time', [hour.toString() , match[2]]);
 			return { h: Number(hour), m: Number(match[2]) };
 		}
 		return undefined;

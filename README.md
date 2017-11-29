@@ -2,10 +2,10 @@
 
 A lightweight, accessible and customizable javascript timepicker widget. Accessibility is based on ARIA properties and keyboard support. The styling is kept simple and can be easily modified.
 
-## Advantages
+## Yet another timepicker? - Advantages
  - no dependencies
  - tiny (6KB minified, 2KB gzipped)
- - can be used with or without jQuery
+ - can be used as jQuery pluin or standalone
  - styling is easy to change
  - comes in 2 variations
  
@@ -17,8 +17,13 @@ A lightweight, accessible and customizable javascript timepicker widget. Accessi
   <img src="example/appointment-picker-large.png" width="550" alt=""/>
 </p>
 
-## Usage
-Import both the stylesheet and the script
+## Installation
+```
+npm install --save appointment-picker
+```
+
+## Setup
+Add both the stylesheet and the script
 ```html
 <link rel="stylesheet" href="css/appointment-picker.css">
 <script src="js/appointment-picker.js"></script>
@@ -62,10 +67,10 @@ The appointment-picker can be configured with options
 - `endTime` hides all appointments above this hour, default is `24`
 - `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increasesthe size of the picker and the appointments by setting a `is-large` modifier
-- `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see demo](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
+- `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
 - `title` defines the picker's heading
 
-__Note:__ with `startTime` and `endTime` appointment hours can be visually removed. If startTime is greater than minTime a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([Demo](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
+__Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
 
 Pass the options into the the AppointmentPicker call or the jQuery plugin call
 ```javascript
@@ -102,7 +107,7 @@ To programatically open a picker instance call
 picker.open();
 ```
 
-To set a time of a picker instance
+To set a time of a picker instance (empty string resets the time)
 ```javascript
 picker.setTime('10:30');
 ```
@@ -118,7 +123,7 @@ picker.destroy();
 ```
 
 ## Events
-Appointment-picker exposes an event for hooking into the functionality. The event `change.appo.picker` contains a property `time` and is triggered on each successful value change ([see event demo](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
+Appointment-picker exposes an event for hooking into the functionality. The event `change.appo.picker` contains a property `time` and is triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
 ```javascript
 document.body.addEventListener('change.appo.picker', function(e) { var time = e.time; }, false);
 ```
@@ -127,7 +132,7 @@ document.body.addEventListener('change.appo.picker', function(e) { var time = e.
 All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-picker-list-item`. Depending on your project, you can either overwrite them using your own CSS or by modifying the provided CSS.
 
 ## Best practices
-- appointment-picker neither installs anyevent listeners outside of the input nor it adds any dom elements until it is opened by the user
+- appointment-picker neither installs any event listeners outside of the input nor it adds any dom elements until it is opened by the user
 - it can be destroyed using its the exposed destroy method that causes all event listeners and dom elements to be removed (i.e. if used in a single page application)
 
 ## AMD / CommonJS wrapper
@@ -144,19 +149,12 @@ if (typeof exports === 'object') {
 }
 ```
 
-## Browser Support
+## Browser Support (tested)
 - Chrome
 - Firefox
-- Safari
+- Safari (macOS 11 & iOS 10)
 - Edge
-
-## Datepair Plugin Example
-
-You can combine this timepicker plugin with PikaDay to have a date time pair combo with similar look & feel:
-
-<img src="example/appointment-pikaday.png" width="400" />
-
-Link to Pikaday: https://github.com/dbushell/Pikaday
+- IE11
 
 ## Author & License
 - Jan Suwart | MIT License

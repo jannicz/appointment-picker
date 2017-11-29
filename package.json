@@ -1,8 +1,8 @@
 {
   "name": "appointment-picker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "customizable timepicker to be used with or without jQuery",
-  "main": "appointment-picker.js",
+  "main": "js/appointment-picker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
