@@ -2,21 +2,21 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.3
+ * @version 1.0.4
  *
  * @author Jan Suwart
 */
 (function (root, factory) {
 	if (typeof exports === 'object') {
-		module.exports = factory(root);
+		module.exports = factory(root); // AMD (RequireJS)
 	} else if (typeof define === 'function' && define.amd) {
 		define('appointment-picker', [], function () {
-			return factory(root);
+			return factory(root); // CommonJS (Node, Browserify)
 		});
 	} else {
-		root.AppointmentPicker = factory(root);
+		root.AppointmentPicker = factory(root); // Browser globals (root = window)
 	}
-}(this, function(window) {
+}(this, function() {
 	'use strict';
 
 	/**
@@ -149,7 +149,7 @@
 		this.picker.addEventListener('click', this.selectionEventFn);
 		this.picker.addEventListener('keyup', this.keyEventFn);
 		// Delay document click listener to prevent picker flashing
-		window.setTimeout(function() {
+		setTimeout(function() {
 			document.body.addEventListener('click', _this.closeEventFn);
 			document.body.addEventListener('focus', _this.tabKeyUpEventFn, true);	
 		}, 100);

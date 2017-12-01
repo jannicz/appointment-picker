@@ -1,70 +1,75 @@
-﻿/*
- * appointment-picker.css 1.0.3 | MIT License | github.com/jannicz/appointment-picker
+/*
+ * appointment-picker.css 1.0.4 | MIT License | github.com/jannicz/appointment-picker
  */
-
 /* Default variation */
-
 .appo-picker {
-    position: absolute;
-    display: none;
-    background-color: white;
-    max-width: 240px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    box-shadow: 0 5px 15px -5px #ccc;
-    z-index: 9999;
-    font-family: Helvetica, Arial, sans-serif;
-}
-
-.appo-picker.is-open {
-    display: -ms-flexbox;  /* IE 10 */
-    display: -webkit-flex; /* Safari 6.1+. iOS 7.1+, BB10 */
+  position: absolute;
+  display: none;
+  background-color: white;
+  max-width: 240px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 0 5px 15px -5px #ccc;
+  z-index: 9999;
+  font-family: Helvetica, Arial, sans-serif;
+  /* Large variation */ }
+  .appo-picker.is-open {
+    display: -ms-flexbox;
+    /* IE 10 */
+    display: -webkit-flex;
+    /* Safari 6.1+. iOS 7.1+, BB10 */
     display: flex;
     -ms-flex-direction: column;
     -webkit-flex-direction: column;
-    flex-direction: column;
-}
-
-.appo-picker.is-position-static {
+    flex-direction: column; }
+  .appo-picker.is-position-static {
     display: flex;
     flex-direction: column;
-    position: static;
-}
+    position: static; }
+  .appo-picker.is-large {
+    max-width: 420px;
+    padding: 40px;
+    box-shadow: 0 5px 15px 0 #ccc; }
+    .appo-picker.is-large .appo-picker-title {
+      height: 40px;
+      font-size: 18px; }
+    .appo-picker.is-large .appo-picker-list {
+      max-width: 340px; }
+    .appo-picker.is-large .appo-picker-list-item {
+      width: 25%;
+      height: 47px;
+      font-size: 16px; }
 
 .appo-picker-title {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    height: 30px;
-    font-size: 14px;
-    font-weight: bold;
-}
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  height: 30px;
+  font-size: 14px;
+  font-weight: bold; }
 
 .appo-picker-list {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -ms-flex-direction: row;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    -ms-flex-wrap: wrap;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-    max-width: 240px;
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-}
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -ms-flex-direction: row;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -ms-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  max-width: 240px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none; }
 
 .appo-picker-list-item {
-    width: 25%;
-    height: 34px;
-}
-
-.appo-picker-list-item input[type="button"] {
+  width: 25%;
+  height: 34px; }
+  .appo-picker-list-item input[type="button"] {
     width: 100%;
     height: 100%;
     margin: 0 1px 1px 0;
@@ -78,47 +83,17 @@
     line-height: 15px;
     -webkit-appearance: none;
     -moz-appearance: none;
-    cursor: pointer;
-}
-
-.appo-picker-list-item input[type="button"]:hover,
-.appo-picker-list-item input[type="button"]:focus {
-    color: #fff;
-    background-color: #ff8000;
-    outline: none;
-}
-
-.appo-picker-list-item input[type="button"].is-selected {
-    background-color: #33aaff;
-    color: #fff;
-    box-shadow: inset 0 1px 2px #666;
-}
-
-.appo-picker-list-item input[type="button"]:disabled {
-    background-color: #D5E9F7;
-    opacity: 0.3;
-    color: #666;
-}
-
-/* Large variation */
-
-.appo-picker.is-large {
-    max-width: 420px;
-    padding: 40px;
-    box-shadow: 0 5px 15px 0 #ccc;
-}
-
-.appo-picker.is-large .appo-picker-title {
-    height: 40px;
-    font-size: 18px;
-}
-
-.appo-picker.is-large .appo-picker-list {
-    max-width: 340px;
-}
-
-.appo-picker.is-large .appo-picker-list-item {
-    width: 25%;
-    height: 47px;
-    font-size: 16px;
-}
+    cursor: pointer; }
+    .appo-picker-list-item input[type="button"].is-selected {
+      background-color: #33aaff;
+      color: #fff;
+      box-shadow: inset 0 1px 2px #666; }
+    .appo-picker-list-item input[type="button"]:hover, .appo-picker-list-item input[type="button"]:active, .appo-picker-list-item input[type="button"]:focus {
+      color: #fff;
+      background-color: #ff8000;
+      outline: none; }
+    .appo-picker-list-item input[type="button"]:disabled {
+      background-color: #D5E9F7;
+      opacity: 0.3;
+      color: #666;
+      cursor: auto; }

@@ -28,11 +28,15 @@ Add both the stylesheet and the script
 <link rel="stylesheet" href="css/appointment-picker.css">
 <script src="js/appointment-picker.js"></script>
 ```
-or using a module loader
+
+## AMD / CommonJS wrapper
+Appointment-Picker supports AMD and CommonJS import
+
 ```javascript
-// ES6
+// AMD (RequireJS)
 import AppointmentPicker from 'appointment-picker';
-// AMD
+
+// CommonJS (Node, Browserify)
 const AppointmentPicker = require('appointment-picker');
 ```
 
@@ -146,26 +150,12 @@ All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-pi
   <input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
   ```
 
-## AMD / CommonJS wrapper
-Appointment-Picker supports AMD and CommonJS import
-```javascript
-if (typeof exports === 'object') {
-  module.exports = factory(root);
-} else if (typeof define === 'function' && define.amd) {
-  define('appointment-picker', [], function () {
-    return factory(root);
-  });
-} else {
-  root.AppointmentPicker = factory(root);
-}
-```
-
 ## Browser Support (tested)
 - Chrome
 - Firefox
 - Safari (macOS 11 & iOS 10)
 - Edge
-- IE11
+- IE11 / IE10
 
 ## Author & License
 - Jan Suwart | MIT License
