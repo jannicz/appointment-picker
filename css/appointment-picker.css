@@ -1,5 +1,5 @@
-/*
- * appointment-picker.css 1.0.2 | MIT License | github.com/jannicz/appointment-picker
+﻿/*
+ * appointment-picker.css 1.0.3 | MIT License | github.com/jannicz/appointment-picker
  */
 
 /* Default variation */
@@ -17,7 +17,11 @@
 }
 
 .appo-picker.is-open {
+    display: -ms-flexbox;  /* IE 10 */
+    display: -webkit-flex; /* Safari 6.1+. iOS 7.1+, BB10 */
     display: flex;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
     flex-direction: column;
 }
 
@@ -28,7 +32,11 @@
 }
 
 .appo-picker-title {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
     height: 30px;
     font-size: 14px;
@@ -36,8 +44,14 @@
 }
 
 .appo-picker-list {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
     flex-direction: row;
+    -ms-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
     max-width: 240px;
     padding: 0;

@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.2
+ * @version 1.0.3
  *
  * @author Jan Suwart
 */
