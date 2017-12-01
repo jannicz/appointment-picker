@@ -133,23 +133,26 @@
 		}
 	};
 
-	/**
-	 * Opens the picker, registers further click events
-	 * @param {Event} e - some event
-	 */
-	AppointmentPicker.prototype.open = function(e) {
+	// Opens the picker, registers further click events
+	AppointmentPicker.prototype.open = function() {
+		var _this = this;
+
 		if (this.isOpen) return;
 
 		if (!this.isInDom) {
 			this.picker = this.build();
 			this.isInDom = true;
 		}
+
 		this.isOpen = true;
 		this.render();
 		this.picker.addEventListener('click', this.selectionEventFn);
 		this.picker.addEventListener('keyup', this.keyEventFn);
-		document.body.addEventListener('click', this.closeEventFn);
-		document.body.addEventListener('focus', this.tabKeyUpEventFn, true);
+		// Delay document click listener to prevent picker flashing
+		window.setTimeout(function() {
+			document.body.addEventListener('click', _this.closeEventFn);
+			document.body.addEventListener('focus', _this.tabKeyUpEventFn, true);	
+		}, 100);
 	};
 
 	/**
