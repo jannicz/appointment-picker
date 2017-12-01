@@ -28,6 +28,13 @@ Add both the stylesheet and the script
 <link rel="stylesheet" href="css/appointment-picker.css">
 <script src="js/appointment-picker.js"></script>
 ```
+or using a module loader
+```javascript
+// ES6
+import AppointmentPicker from 'appointment-picker';
+// AMD
+const AppointmentPicker = require('appointment-picker');
+```
 
 ### Use as jQuery plugin
 
@@ -92,7 +99,7 @@ $('#time-1').appointmentPicker({
 ```
 
 ## Methods
-The appointment-picker exposes several functions to change its behaviour from outside ([see this demo](https://jannicz.github.io/appointment-picker/example/exposed-functions.html)). You can both use it with or without jQuery. While using jQuery always remember to add `$pickerReference.appointmentPicker.functionName()` to your picker reference.
+The appointment-picker exposes several functions to change its behaviour from outside ([example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html)). You can both use it with or without jQuery. While using jQuery always remember to add `$pickerReference.appointmentPicker.functionName()` to your picker reference.
 
 To get the current time programatically from a picker instance use
 ```javascript
@@ -134,6 +141,10 @@ All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-pi
 ## Best practices
 - appointment-picker neither installs any event listeners outside of the input nor it adds any dom elements until it is opened by the user
 - it can be destroyed using its the exposed destroy method that causes all event listeners and dom elements to be removed (i.e. if used in a single page application)
+- for better screen reader support it is recomended to add both a `aria-label` and `aria-live` properties on the input field
+  ```html
+  <input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+  ```
 
 ## AMD / CommonJS wrapper
 Appointment-Picker supports AMD and CommonJS import

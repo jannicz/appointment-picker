@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.1
+ * @version 1.0.2
  *
  * @author Jan Suwart
 */
@@ -75,6 +75,7 @@
 			_this.options[opt] = options[opt];
 		}
 		if (!_this.el) return;
+
 		if (_this.el.length !== undefined) {
 			console.warn('appointment-picker: pass only one dom element as argument');
 			return;
@@ -137,8 +138,6 @@
 	 * @param {Event} e - some event
 	 */
 	AppointmentPicker.prototype.open = function(e) {
-		var _this = this;
-
 		if (this.isOpen) return;
 
 		if (!this.isInDom) {
@@ -149,11 +148,8 @@
 		this.render();
 		this.picker.addEventListener('click', this.selectionEventFn);
 		this.picker.addEventListener('keyup', this.keyEventFn);
-		// Delay document click listener to prevent picker flashing
-		setTimeout(function() {	
-			document.body.addEventListener('click', _this.closeEventFn);
-			document.body.addEventListener('focus', _this.tabKeyUpEventFn, true);
-		}, 100);
+		document.body.addEventListener('click', this.closeEventFn);
+		document.body.addEventListener('focus', this.tabKeyUpEventFn, true);
 	};
 
 	/**
@@ -169,6 +165,7 @@
 				Element.prototype.webkitMatchesSelector;
 		if (e) {
 			var el = e.target;
+			if (el.isEqualNode(this.el)) return;
 			// Check if the clicked target is inside the picker
 			while (el) {
 				if (el.matches('.appo-picker')) {
@@ -250,6 +247,7 @@
 		node.className = ('appo-picker' + (this.options.large ? ' is-large' : ''));
 		node.setAttribute('aria-hidden', true);
 		this.el.insertAdjacentElement('afterend', node);
+
 		return node;
 	};
 
@@ -278,7 +276,7 @@
 		if (!time && !value) { // Empty string, reset time
 			this.time = {};
 			this.displayTime = '';
-		} else if (time) {
+		} else if (time) { // A time format was recognized
 			var hour = time.h;
 			var minute = time.m;
 			var isValid = _isValid(hour, minute, this.options, this.intervals, this.disabledArr);
@@ -316,6 +314,7 @@
 			if (item.h === hour && item.m === minute)
 				inDisabledArr = true;
 		});
+
 		return !inDisabledArr ? true : false; // All valid
 	};
 
@@ -349,6 +348,7 @@
 			}
 			return { h: Number(hour), m: Number(match[2]) };
 		}
+
 		return undefined;
 	};
 
@@ -371,6 +371,7 @@
 			}
 			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
 		}
+
 		return pattern.replace('H', displayHour).replace('M', _zeroPadTime(minute));
 	};
 
