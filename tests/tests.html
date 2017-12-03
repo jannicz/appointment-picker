@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.css">
+  <link rel="stylesheet" type="text/css" href="../example/demo.css">
+  <link rel="stylesheet" href="../css/appointment-picker.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.js"></script>
+  <script>
+    mocha.setup('bdd'); // Use "tdd" interface
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
+  <script src="../js/appointment-picker.min.js"></script>
+</head>
+
+<body>
+  <article style="border: none;">
+    <!-- the picker test instance input field -->
+    <div style="padding: 50px 50px 200px 50px;">
+      <label for="time-spec">Time</label>
+      <input id="time-spec" type="text" value="2:30 pm">
+    </div>
+
+    <!-- the script with tests -->
+    <script src="test.js"></script>
+
+    <!-- the element with id="mocha" will contain tests -->
+    <div id="mocha"></div>
+
+    <!-- run tests -->
+    <script>
+      mocha.checkLeaks();
+      mocha.globals(['jQuery']);
+      mocha.run();
+    </script>
+
+    <p><small>Copyright Jan Suwart, MIT license</small></p>
+  </article>
+</body>
+
+</html>

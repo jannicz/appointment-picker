@@ -142,18 +142,22 @@ document.body.addEventListener('change.appo.picker', function(e) { var time = e.
 ## Styling
 All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-picker-list-item`. Depending on your project, you can either overwrite them using your own CSS or by modifying the provided CSS.
 
+## Accessibility
+
+For screen reader support add both a `aria-label` and `aria-live` properties on the input field
+```html
+<input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+```
+
 ## Best practices
 - appointment-picker neither installs any event listeners outside of the input nor it adds any dom elements until it is opened by the user
 - it can be destroyed using its the exposed destroy method that causes all event listeners and dom elements to be removed (i.e. if used in a single page application)
-- for better screen reader support it is recomended to add both a `aria-label` and `aria-live` properties on the input field
-  ```html
-  <input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
-  ```
+- there is automated testing ([Mocha](https://mochajs.org) and [Chai](http://chaijs.com/api/assert)) to assert that the exposed core functions and the date parser behave correctly ([see specs page](https://jannicz.github.io/appointment-picker/tests/tests.html))
 
 ## Browser Support (tested)
 - Chrome
 - Firefox
-- Safari (macOS 11 & iOS 10)
+- Safari (macOS 10 & iOS 9)
 - Edge
 - IE11 / IE10
 

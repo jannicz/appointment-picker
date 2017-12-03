@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.4
+ * @version 1.0.5
  *
  * @author Jan Suwart
 */
@@ -59,7 +59,7 @@
 		this.closeEventFn = this.close.bind(this);
 		this.openEventFn = this.open.bind(this);
 		this.keyEventFn = this.onKeyPress.bind(this);
-		this.tabKeyUpEventFn = this.onTabKeyUp.bind(this);
+		this.bodyFocusEventFn = this.onBodyFocus.bind(this);
 
 		initialize(this, el, options || {});
 	};
@@ -67,7 +67,7 @@
 	/**
 	 * Initialize the picker, merge default options and check for errors
 	 * @param {Object} _this - this view reference
-	 * @param {DOMnode} el - reference to the time input field
+	 * @param {HTMLElement} el - reference to the time input field
 	 * @param {Object} options - user defined options
 	 */
 	function initialize(_this, el, options) {
@@ -151,7 +151,7 @@
 		// Delay document click listener to prevent picker flashing
 		setTimeout(function() {
 			document.body.addEventListener('click', _this.closeEventFn);
-			document.body.addEventListener('focus', _this.tabKeyUpEventFn, true);	
+			document.body.addEventListener('focus', _this.bodyFocusEventFn, true);	
 		}, 100);
 	};
 
@@ -185,7 +185,7 @@
 		this.picker.removeEventListener('click', this.selectionEventFn);
 		this.picker.removeEventListener('keyup', this.keyEventFn);
 		document.body.removeEventListener('click', this.closeEventFn);
-		document.body.removeEventListener('focus', this.tabKeyUpEventFn, true);
+		document.body.removeEventListener('focus', this.bodyFocusEventFn, true);
 	};
 
 	/**
@@ -238,7 +238,7 @@
 	};
 
 	// Close the picker on document focus, usually by hitting TAB
-	AppointmentPicker.prototype.onTabKeyUp = function(e) {
+	AppointmentPicker.prototype.onBodyFocus = function(e) {
 		if (!this.isOpen) return;
 		this.close(e);
 	};
@@ -333,26 +333,26 @@
 	};
 
 	/**
-	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM '
+	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM ' or '10:30 am'
 	 * @returns {Object|undefined} containing {h: hour, m: minute} or undefined if unrecognized
-	 * @see https://regexr.com/3h7bo  
+	 * @see https://regexr.com/3heaj
 	 */
 	function _parseTime(time) {
-		var match = time.match(/^([\d]{1,2}):([\d]{2})[\s]*([ap][m])?.*$/);
-		var hour;
+		var match = time.match(/^\s*([\d]{1,2}):([\d]{2})[\s]*([ap][m])?.*$/i);
 
 		if (match) {
-			if (match[3] === 'pm' && match[1] !== '12') {
-				hour = Number(match[1]) + 12;
-			} else if (match[3] === 'am' && match[1] === '12') {
-				hour = 0;
-			} else {
-				hour = match[1]
-			}
-			return { h: Number(hour), m: Number(match[2]) };
-		}
+			var hour = Number(match[1]);
+			var minute = Number(match[2]);
+			var postfix = match[3];
 
-		return undefined;
+			if (/pm/i.test(postfix) && hour !== 12) {
+				hour += 12;
+			} else if (/am/i.test(postfix) && hour === 12) {
+				hour = 0;
+			}
+			return { h: hour, m: minute };
+		}
+		return;
 	};
 
 	/**
@@ -385,7 +385,7 @@
 		var next = direction < 0 ? item.previousElementSibling : item.nextElementSibling;
 		if (next && next.className.indexOf('disabled') < 0) {
 			return next;
-		} else { // If .disabled found, try the next sibling
+		} else { // If disabled class found, try the next sibling
 			return _getNextSibling(next, direction);
 		}
 	};
