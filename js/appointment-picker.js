@@ -2,16 +2,16 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.5
+ * @version 1.0.6
  *
  * @author Jan Suwart
 */
 (function (root, factory) {
 	if (typeof exports === 'object') {
-		module.exports = factory(root); // AMD (RequireJS)
+		module.exports = factory(root); // CommonJS (Node, Browserify, Webpack)
 	} else if (typeof define === 'function' && define.amd) {
 		define('appointment-picker', [], function () {
-			return factory(root); // CommonJS (Node, Browserify)
+			return factory(root); // AMD (RequireJS)
 		});
 	} else {
 		root.AppointmentPicker = factory(root); // Browser globals (root = window)
@@ -21,7 +21,7 @@
 
 	/**
 	 * Constructor
-	 * @param {DOMnode} el - reference to the time input field
+	 * @param {HTMLElement} el - reference to the time input field
 	 * @param {Object} options - user defined options
 	 */
 	var AppointmentPicker = function(el, options) {
@@ -35,7 +35,7 @@
 			mode: '24h', // Whether to use 24h or 12h system
 			large: false, // Whether large button style
 			static: false, // Whether to position static (always open)
-			title: 'Timepicker'
+			title: 'Timepicker' // Title in opened state
 		};
 		this.template = {
 			inner: '<li class="appo-picker-list-item {{disabled}}">' +
@@ -54,12 +54,12 @@
 		this.intervals = []; // [0, 15, 30, 45]
 		this.disabledArr = [];
 		this.displayTime = ''; // '6:30pm'
-		this.selectionEventFn = this.select.bind(this);
-		this.changeEventFn = this.onchange.bind(this);
+		this.selectionEventFn = _onselect.bind(this);
+		this.changeEventFn = _onchange.bind(this);
 		this.closeEventFn = this.close.bind(this);
 		this.openEventFn = this.open.bind(this);
-		this.keyEventFn = this.onKeyPress.bind(this);
-		this.bodyFocusEventFn = this.onBodyFocus.bind(this);
+		this.keyEventFn = _onKeyPress.bind(this);
+		this.bodyFocusEventFn = _onBodyFocus.bind(this);
 
 		initialize(this, el, options || {});
 	};
@@ -84,27 +84,29 @@
 			return;
 		}
 		// Create 2-dim array holding all disabled times
-		_this.options.disabled.forEach(function(val, i) {
-			_this.disabledArr[i] = _parseTime(_this.options.disabled[i]);
+		_this.disabledArr = _this.options.disabled.map(function(item) {
+			return _parseTime(item);
 		});
+
 		// Create array holding all minute permutations
 		for (var j = 0; j < 60 / _this.options.interval; j++) {
 			_this.intervals[j] = j * _this.options.interval;
 		}
 
-		if (!_this.options.static) {
-			el.addEventListener('focus', _this.openEventFn);
-		} else {
-			// Render the picker in position static, don't register onOpen event
-			_this.picker = _this.build();
-			_this.picker.classList.add('is-position-static');
-			_this.picker.addEventListener('click', _this.selectionEventFn);
-			_this.isInDom = true;
-		}
-
 		_this.setTime(_this.el.value);
 		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
+
+		if (!_this.options.static) { // Default positioning 
+			el.addEventListener('focus', _this.openEventFn);
+		} else {
+			// Render the picker in position static, don't register onOpen event
+			_this.picker = _build(_this);
+			_this.picker.classList.add('is-position-static');
+			_this.picker.addEventListener('click', _this.selectionEventFn);
+			_this.isOpen = true;
+			_this.render();
+		}
 	};
 
 	// Attach visibility classes and set the picker's position
@@ -126,8 +128,10 @@
 					selectedEl.classList.add('is-selected');
 				}
 			}
-			this.picker.style.top = bottom + 'px';
-			this.picker.style.left = left + 'px';
+			if (!this.options.static) {
+				this.picker.style.top = bottom + 'px';
+				this.picker.style.left = left + 'px';
+			}
 		} else {
 			this.picker.classList.remove('is-open');
 		}
@@ -140,7 +144,7 @@
 		if (this.isOpen) return;
 
 		if (!this.isInDom) {
-			this.picker = this.build();
+			this.picker = _build(_this);
 			this.isInDom = true;
 		}
 
@@ -192,17 +196,22 @@
 	 * Listener for an appointment selection
 	 * @param {Event} e - mouse click or keyboard event
 	 */
-	AppointmentPicker.prototype.select = function(e) {
+	function _onselect(e) {
 		var _this = this;
 		if (!e.target.value) return;
 
 		this.setTime(e.target.value);
-		this.el.focus();
-		setTimeout(function() { _this.close(null); }, 100);
+		
+		if (_this.options.static) {
+			this.render();
+		} else {
+			this.el.focus();
+			setTimeout(function() { _this.close(null); }, 100);
+		}
 	};
 
 	// Handles manual input changes on input field
-	AppointmentPicker.prototype.onchange = function(e) {
+	function _onchange(e) {
 		this.setTime(this.el.value);
 	};
 
@@ -210,7 +219,7 @@
 	 * Move focus forward and backward on keyboard arrow key, close picker on ESC
 	 * @param {Event} e - keyboard event
 	 */
-	AppointmentPicker.prototype.onKeyPress = function(e) {
+	function _onKeyPress(e) {
 		var first = this.picker.querySelector('input[type="button"]:not([disabled])');
 		var selected = this.picker.querySelector('input.is-selected');
 		var next = null;
@@ -238,20 +247,9 @@
 	};
 
 	// Close the picker on document focus, usually by hitting TAB
-	AppointmentPicker.prototype.onBodyFocus = function(e) {
+	function _onBodyFocus(e) {
 		if (!this.isOpen) return;
 		this.close(e);
-	};
-
-	// Create a dom node containing the markup for the picker
-	AppointmentPicker.prototype.build = function() {
-		var node = document.createElement('div');
-		node.innerHTML = _assemblePicker(this.options, this.template, this.intervals, this.disabledArr);
-		node.className = ('appo-picker' + (this.options.large ? ' is-large' : ''));
-		node.setAttribute('aria-hidden', true);
-		this.el.insertAdjacentElement('afterend', node);
-
-		return node;
 	};
 
 	// Remove the picker's node from the dom and unregister all events
@@ -388,6 +386,17 @@
 		} else { // If disabled class found, try the next sibling
 			return _getNextSibling(next, direction);
 		}
+	};
+
+	// Create a dom node containing the markup for the picker
+	function _build(_this) {
+		var node = document.createElement('div');
+		node.innerHTML = _assemblePicker(_this.options, _this.template, _this.intervals, _this.disabledArr);
+		node.className = ('appo-picker' + (_this.options.large ? ' is-large' : ''));
+		node.setAttribute('aria-hidden', true);
+		_this.el.insertAdjacentElement('afterend', node);
+
+		return node;
 	};
 
 	/**

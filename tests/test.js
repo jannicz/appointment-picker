@@ -5,11 +5,19 @@
 */
 describe("appointment-picker API test", function() {
 
-	let pickerInstance;
-	let assert = chai.assert;
+	var pickerInstance;
+	var assert = chai.assert;
+	var inputEl = document.getElementById('time-spec');
+
+	var createKeyboardEv = function(keyCode, el) {
+			var event = document.createEvent('Event');
+			event.initEvent('keyup', true, true);
+			event.keyCode = keyCode;
+			el.dispatchEvent(event);
+	}
 
 	before(() => {
-		pickerInstance = new AppointmentPicker(document.getElementById('time-spec'), {
+		pickerInstance = new AppointmentPicker(inputEl, {
 			interval: 30,
 			mode: '12h',
 			maxTime: 18,
@@ -125,7 +133,8 @@ describe("appointment-picker API test", function() {
 		it("moves time selection by calling keyboard event function", function(done) {
 			this.slow(500);
 			// Simulate event with keyCode 40 = down arrow
-			pickerInstance.onKeyPress({ keyCode: 40 });
+			createKeyboardEv(40, inputEl);
+
 			var result = pickerInstance.getTime();
 			assert.deepEqual(result, { h: 12, m: 30 });
 			setTimeout(done, 100);
@@ -134,8 +143,8 @@ describe("appointment-picker API test", function() {
 		it("moves selection and skips disabled times using keyboard event function", function(done) {
 			this.slow(500);
 			// Simulate two events with keyCode 40 = down arrow
-			pickerInstance.onKeyPress({ keyCode: 40 });
-			pickerInstance.onKeyPress({ keyCode: 40 });
+			createKeyboardEv(40, inputEl);
+			createKeyboardEv(40, inputEl);
 
 			var result = pickerInstance.getTime();
 			assert.deepEqual(result, { h: 14, m: 30 });

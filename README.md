@@ -6,7 +6,7 @@ A lightweight, accessible and customizable javascript timepicker widget. Accessi
  - no dependencies
  - tiny (6KB minified, 2KB gzipped)
  - can be used as jQuery pluin or standalone
- - styling is easy to change
+ - only the listed times can be picked or entered
  - comes in 2 variations
  
 <a href="https://jannicz.github.io/appointment-picker/">
@@ -26,18 +26,24 @@ npm install --save appointment-picker
 Add both the stylesheet and the script
 ```html
 <link rel="stylesheet" href="css/appointment-picker.css">
-<script src="js/appointment-picker.js"></script>
+<script src="js/appointment-picker.min.js"></script>
+
+<script type="text/javascript">
+    new AppointmentPicker(...);
+</script>
 ```
 
 ## AMD / CommonJS wrapper
 Appointment-Picker supports AMD and CommonJS import
 
 ```javascript
-// AMD (RequireJS)
-import AppointmentPicker from 'appointment-picker';
-
-// CommonJS (Node, Browserify)
+// CommonJS (Node, Browserify, Webpack)
 const AppointmentPicker = require('appointment-picker');
+
+// AMD (RequireJS)
+require(['appointment-picker'], function(AppointmentPicker) {
+  new AppointmentPicker(...);
+});
 ```
 
 ### Use as jQuery plugin
@@ -77,7 +83,7 @@ The appointment-picker can be configured with options
 - `startTime` hides all appointments below this hour, default is `0`
 - `endTime` hides all appointments above this hour, default is `24`
 - `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
-- `large` increasesthe size of the picker and the appointments by setting a `is-large` modifier
+- `large` increases the size of the picker and the appointments by setting a `is-large` modifier
 - `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
 - `title` defines the picker's heading
 
