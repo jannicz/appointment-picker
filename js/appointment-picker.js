@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.6
+ * @version 1.0.7
  *
  * @author Jan Suwart
 */
@@ -56,6 +56,7 @@
 		this.displayTime = ''; // '6:30pm'
 		this.selectionEventFn = _onselect.bind(this);
 		this.changeEventFn = _onchange.bind(this);
+		this.clickEventFn = _onInputClick.bind(this);
 		this.closeEventFn = this.close.bind(this);
 		this.openEventFn = this.open.bind(this);
 		this.keyEventFn = _onKeyPress.bind(this);
@@ -105,6 +106,7 @@
 			_this.picker.classList.add('is-position-static');
 			_this.picker.addEventListener('click', _this.selectionEventFn);
 			_this.isOpen = true;
+
 			_this.render();
 		}
 	};
@@ -152,10 +154,12 @@
 		this.render();
 		this.picker.addEventListener('click', this.selectionEventFn);
 		this.picker.addEventListener('keyup', this.keyEventFn);
+		this.el.removeEventListener('click', this.clickEventFn);
+
 		// Delay document click listener to prevent picker flashing
 		setTimeout(function() {
 			document.body.addEventListener('click', _this.closeEventFn);
-			document.body.addEventListener('focus', _this.bodyFocusEventFn, true);	
+			document.body.addEventListener('focus', _this.bodyFocusEventFn, true);
 		}, 100);
 	};
 
@@ -190,6 +194,8 @@
 		this.picker.removeEventListener('keyup', this.keyEventFn);
 		document.body.removeEventListener('click', this.closeEventFn);
 		document.body.removeEventListener('focus', this.bodyFocusEventFn, true);
+		// Add an event listener to open on click regardless of mouse focus
+		this.el.addEventListener('click', this.clickEventFn);
 	};
 
 	/**
@@ -251,6 +257,11 @@
 		if (!this.isOpen) return;
 		this.close(e);
 	};
+
+	// If the input has focus, a mouseclick can still open the picker
+	function _onInputClick(e) {
+		this.open();
+	}
 
 	// Remove the picker's node from the dom and unregister all events
 	AppointmentPicker.prototype.destroy = function() {
