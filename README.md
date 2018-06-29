@@ -5,9 +5,8 @@ A lightweight, accessible and customizable javascript timepicker widget. Accessi
 ## Yet another timepicker? - Advantages
  - no dependencies
  - tiny (6KB minified, 2KB gzipped)
- - can be used as jQuery pluin or standalone
- - only the listed times can be picked or entered
- - comes in 2 variations
+ - can be used as jQuery plugin or standalone
+ - only the listed times can be picked or entered, no validation necessary
  
 <a href="https://jannicz.github.io/appointment-picker/">
   <strong>See Appointment-Picker Demo and Examples</strong>
@@ -66,7 +65,7 @@ var $picker = $('#time-1').appointmentPicker();
 ```
 
 ### Use without any dependency
-If you don't want any dependency, you can initialize the picker just like that
+If you don't use jQuery, initialize the picker using `new`
 ```html
 <input id="time-2" type="text" value="10:00">
 ```
@@ -89,7 +88,8 @@ The appointment-picker can be configured with options
 
 __Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
 
-Pass the options into the the AppointmentPicker call or the jQuery plugin call
+Pass the options into the the AppointmentPicker call
+// Standalone
 ```javascript
 var picker = new AppointmentPicker(document.getElementById('time-2'), {
   interval: 30,
@@ -102,7 +102,7 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
   large: true
 });
 
-// With jQuery
+// Using jQuery
 $('#time-1').appointmentPicker({
   interval: 15
 });
@@ -111,15 +111,15 @@ $('#time-1').appointmentPicker({
 ## Methods
 The appointment-picker exposes several functions to change its behaviour from outside ([example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html)). You can both use it with or without jQuery. While using jQuery always remember to add `$pickerReference.appointmentPicker.functionName()` to your picker reference.
 
-To get the current time programatically from a picker instance use
+To get the current time programmatically from a picker instance use
 ```javascript
-// without jQuery
+// Standalone
 picker.getTime();
 // or access the picker instance of the jQuery object
 $picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
 ```
 
-To programatically open a picker instance call
+To programmatically open a picker instance call
 ```javascript
 picker.open();
 ```
@@ -140,7 +140,11 @@ picker.destroy();
 ```
 
 ## Events
-Appointment-picker exposes an event for hooking into the functionality. The event `change.appo.picker` contains a property `time` and is triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
+Appointment-picker exposes events for hooking into the functionality:
+
+- `change.appo.picker` contains a property `time` and is triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
+- `close.appo.picker` is fired each time the picker is closed
+
 ```javascript
 document.body.addEventListener('change.appo.picker', function(e) { var time = e.time; }, false);
 ```

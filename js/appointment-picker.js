@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.0.7
+ * @version 1.1.0
  *
  * @author Jan Suwart
 */
@@ -109,7 +109,7 @@
 
 			_this.render();
 		}
-	};
+	}
 
 	// Attach visibility classes and set the picker's position
 	AppointmentPicker.prototype.render = function() {
@@ -196,6 +196,8 @@
 		document.body.removeEventListener('focus', this.bodyFocusEventFn, true);
 		// Add an event listener to open on click regardless of mouse focus
 		this.el.addEventListener('click', this.clickEventFn);
+
+		_dispatchEvent(this.el, 'close', this.time);
 	};
 
 	/**
@@ -214,12 +216,12 @@
 			this.el.focus();
 			setTimeout(function() { _this.close(null); }, 100);
 		}
-	};
+	}
 
 	// Handles manual input changes on input field
-	function _onchange(e) {
+	function _onchange() {
 		this.setTime(this.el.value);
-	};
+	}
 
 	/**
 	 * Move focus forward and backward on keyboard arrow key, close picker on ESC
@@ -250,13 +252,13 @@
 				selected.classList.remove('is-selected');
 			this.setTime(next.firstChild.value);
 		}
-	};
+	}
 
 	// Close the picker on document focus, usually by hitting TAB
 	function _onBodyFocus(e) {
 		if (!this.isOpen) return;
 		this.close(e);
-	};
+	}
 
 	// If the input has focus, a mouseclick can still open the picker
 	function _onInputClick(e) {
@@ -274,6 +276,7 @@
 		this.el.removeEventListener('focus', this.openEventFn);
 		this.el.removeEventListener('keyup', this.keyEventFn);
 		this.el.removeEventListener('change', this.changeEventFn);
+		this.el.removeEventListener('click', this.clickEventFn);
 	};
 
 	/**
@@ -296,11 +299,7 @@
 			if (isValid) {
 				this.time = time;
 				this.displayTime = _printTime(this.time.h, this.time.m, timePattern, !is24h);
-				// Trigger an event with attached time property
-				var event = document.createEvent('Event');
-				event.initEvent('change.appo.picker', true, true);
-				event.time = this.time;
-				this.el.dispatchEvent(event);
+				_dispatchEvent(this.el, 'change', this.time);
 			}
 		}
 		this.el.value = this.displayTime;
@@ -328,7 +327,7 @@
 		});
 
 		return !inDisabledArr ? true : false; // All valid
-	};
+	}
 
 	/**
 	 * Add a leading zero and convert to string
@@ -339,7 +338,7 @@
 		if (/^[0-9]{1}$/.test(number))
 			return '0' + number;
 		return number;
-	};
+	}
 
 	/**
 	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM ' or '10:30 am'
@@ -361,8 +360,7 @@
 			}
 			return { h: hour, m: minute };
 		}
-		return;
-	};
+	}
 
 	/**
 	 * Create time considering am/pm conventions
@@ -385,7 +383,7 @@
 		}
 
 		return pattern.replace('H', displayHour).replace('M', _zeroPadTime(minute));
-	};
+	}
 
 	// Find next sibling of item that is not disabled (otherwise return null)
 	function _getNextSibling(item, direction) {
@@ -397,7 +395,7 @@
 		} else { // If disabled class found, try the next sibling
 			return _getNextSibling(next, direction);
 		}
-	};
+	}
 
 	// Create a dom node containing the markup for the picker
 	function _build(_this) {
@@ -408,7 +406,7 @@
 		_this.el.insertAdjacentElement('afterend', node);
 
 		return node;
-	};
+	}
 
 	/**
 	 * Assemble the html containing each appointment represented by a button
@@ -440,7 +438,20 @@
 			.replace('{{classes}}', opt.large ? 'is-large': '')
 			.replace('{{title}}', opt.title)
 			.replace('{{innerHtml}}', inner);
-	};
+	}
+
+	/**
+	 * Creates and triggers an event with attached time property
+	 * @param {HTMLElement} el - element reference
+	 * @param {String} name - event name
+	 * @param {Object} time - current time
+	 */
+	function _dispatchEvent(el, name, time) {
+		var event = document.createEvent('Event');
+		event.initEvent(name + '.appo.picker', true, true);
+		event.time = time;
+		el.dispatchEvent(event);
+	}
 
 	return AppointmentPicker;
 }));
