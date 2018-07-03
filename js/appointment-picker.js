@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.1.0
+ * @version 1.1.1
  *
  * @author Jan Suwart
 */
@@ -318,6 +318,8 @@
 		var inDisabledArr = false;
 		if (hour < opt.minTime || hour > opt.maxTime || hour > 24) { // Out of min/max
 			return false;
+		} else if (hour === opt.maxTime && minute > 0) {
+			return false; // h:[interval] is out of max
 		} else if (intervals.indexOf(minute) < 0) { // Min doesn't match any interval
 			return false;
 		}

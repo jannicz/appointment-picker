@@ -73,7 +73,7 @@ var picker = new AppointmentPicker(document.getElementById('time-3'), {
 	maxTime: 21,
 	startTime: 09,
 	endTime: 23,
-	disabled: ['1:30 pm', '2:00 pm', '7:30 pm', '9:30 pm']
+	disabled: ['1:30 pm', '2:00 pm', '7:30 pm']
 });</pre>
 	</p>
 
@@ -83,13 +83,13 @@ var picker = new AppointmentPicker(document.getElementById('time-3'), {
 		<input id="time-4" type="text" value="12:00 pm" placeholder="h:mm am" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 		<pre>
 new AppointmentPicker(document.getElementById('time-4'), {
-	interval: 30,
+	interval: 15,
 	mode: '12h',
-	startTime: 10,
+	startTime: 12,
 	endTime: 18,
-	minTime: 11,
-	maxTime: 18,
-	disabled: ['4:30 pm', '5:00 pm'],
+	minTime: 13,
+	maxTime: 17,
+	disabled: ['4:00 pm', '4:30 pm'],
 	large: true
 });</pre>
 	</p>
@@ -102,7 +102,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			maxTime: 21,
 			startTime: 09,
 			endTime: 23,
-			disabled: ['1:30 pm', '2:00 pm', '7:30 pm', '9:30 pm']
+			disabled: ['1:30 pm', '2:00 pm', '7:30 pm']
 		});
 
 		new AppointmentPicker(document.getElementById('time-4'), {
@@ -111,8 +111,8 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			startTime: 12,
 			endTime: 18,
 			minTime: 13,
-			maxTime: 18,
-			disabled: ['4:30 pm', '5:00 pm'],
+			maxTime: 17,
+			disabled: ['4:00 pm', '4:30 pm'],
 			large: true
 		});
 	</script>

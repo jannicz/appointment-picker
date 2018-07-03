@@ -96,11 +96,12 @@ describe("appointment-picker API test", function() {
 			{ args: "8:30 pm", expected: { h: 18, m: 0 } },
 			{ args: "1:30 PM", expected: { h: 18, m: 0 } },
 			{ args: "2:00PM",  expected: { h: 18, m: 0 } },
-			{ args: "dh4kj6",  expected: { h: 18, m: 0 } }
+			{ args: "dh4kj6",  expected: { h: 18, m: 0 } },
+			{ args: "18:30",   expected: { h: 18, m: 0 } }
 		];
 
 		testsReject.forEach(function(test) {
-			it('rejects "' + test.args + '" and kepps its old value of 18:00', function() {
+			it('rejects "' + test.args + '" and keeps its old value of 18:00', function() {
 				pickerInstance.setTime(test.args);
 				var result = pickerInstance.getTime();
 				assert.deepEqual(result, test.expected);
