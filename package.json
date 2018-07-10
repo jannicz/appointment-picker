@@ -1,10 +1,11 @@
 {
   "name": "appointment-picker",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "customizable timepicker to be used with or without jQuery",
   "main": "js/appointment-picker.js",
   "scripts": {
-    "uglify": "uglifyjs ./js/appointment-picker.js -c -m -o ./js/appointment-picker.min.js"
+    "uglify": "uglifyjs ./js/appointment-picker.js -c -m -o ./js/appointment-picker.min.js",
+    "css": "node-sass css/appointment-picker.scss css/appointment-picker.css"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,13 @@
   },
   "homepage": "https://github.com/jannicz/appointment-picker#readme",
   "devDependencies": {
+    "node-sass": "^4.9.2",
     "uglify-es": "^3.2.2"
-  }
+  },
+  "keywords": [
+    "appointments",
+    "appointment-scheduling",
+    "time",
+    "picker-library"
+  ]
 }

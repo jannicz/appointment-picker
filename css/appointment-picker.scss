@@ -1,5 +1,5 @@
 ﻿/*
- * appointment-picker.css 1.1.1 | MIT License | github.com/jannicz/appointment-picker
+ * appointment-picker.css 1.1.2 | MIT License | github.com/jannicz/appointment-picker
  */
 
 /* Default variation */
@@ -16,6 +16,7 @@
     font-family: Helvetica, Arial, sans-serif;
 
     &.is-open {
+        display: inline-block; /* IE 9 */
         display: -ms-flexbox; /* IE 10 */
         display: -webkit-flex; /* Safari 6.1+. iOS 7.1+, BB10 */
         display: flex;
@@ -82,6 +83,8 @@
 }
 
 .appo-picker-list-item {
+    display: inline-block; /* IE 9 */
+    display: flex;
     width: 25%;
     height: 34px;
 

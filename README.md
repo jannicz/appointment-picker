@@ -18,7 +18,7 @@ A lightweight, accessible and customizable javascript timepicker widget. Accessi
 
 ## Installation
 ```
-npm install --save appointment-picker
+npm i -S appointment-picker
 ```
 
 ## Setup
@@ -45,6 +45,15 @@ require(['appointment-picker'], function(AppointmentPicker) {
 });
 ```
 
+### Use without any dependency
+Initialize the picker using the `new` keyword
+```html
+<input id="time-2" type="text" value="10:00">
+```
+```javascript
+var picker = new AppointmentPicker(document.getElementById('time-2'), {});
+```
+
 ### Use as jQuery plugin
 
 If you would like to use the appointment-picker as a jQuery plugin add following code before initializing
@@ -56,21 +65,12 @@ $.fn.appointmentPicker = function(options) {
 };
 ```
 
-Now you can initialize the picker on any text input field
+Now you can initialize the picker on any text input field using `$`
 ```html
 <input id="time-1" type="text">
 ```
 ```javascript
 var $picker = $('#time-1').appointmentPicker();
-```
-
-### Use without any dependency
-If you don't use jQuery, initialize the picker using `new`
-```html
-<input id="time-2" type="text" value="10:00">
-```
-```javascript
-var picker = new AppointmentPicker(document.getElementById('time-2'), {});
 ```
 
 ## Options
@@ -89,8 +89,9 @@ The appointment-picker can be configured with options
 __Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
 
 Pass the options into the the AppointmentPicker call
-// Standalone
+
 ```javascript
+// Without dependency
 var picker = new AppointmentPicker(document.getElementById('time-2'), {
   interval: 30,
   mode: '12h',
@@ -113,9 +114,9 @@ The appointment-picker exposes several functions to change its behaviour from ou
 
 To get the current time programmatically from a picker instance use
 ```javascript
-// Standalone
+// Without dependency
 picker.getTime();
-// or access the picker instance of the jQuery object
+// Using jQuery
 $picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
 ```
 
@@ -170,6 +171,11 @@ For screen reader support add both a `aria-label` and `aria-live` properties on 
 - Safari (macOS 10 & iOS 9)
 - Edge
 - IE11 / IE10
+- IE9 (with classList polyfill)
+
+### Legacy browser support (i.e. IE9)
+
+Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply load the polyfill from a CDN in your html head.
 
 ## Author & License
 - Jan Suwart | MIT License

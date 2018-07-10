@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.1.1
+ * @version 1.1.2
  *
  * @author Jan Suwart
 */
@@ -260,8 +260,8 @@
 		this.close(e);
 	}
 
-	// If the input has focus, a mouseclick can still open the picker
-	function _onInputClick(e) {
+	// Opens the picker, useful if the input has focus, still to be able to open the picker
+	function _onInputClick() {
 		this.open();
 	}
 
@@ -305,7 +305,7 @@
 		this.el.value = this.displayTime;
 	};
 
-	// Time getter returns time as 24h
+	// Time getter returns time as object
 	AppointmentPicker.prototype.getTime = function() {
 		return this.time;
 	};
