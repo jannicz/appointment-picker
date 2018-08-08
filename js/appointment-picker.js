@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.1.2
+ * @version 1.2.0
  *
  * @author Jan Suwart
 */
@@ -36,6 +36,7 @@
 			large: false, // Whether large button style
 			static: false, // Whether to position static (always open)
 			leadingZero: false, // Whether to zero pad hour (i.e. 07:15)
+			allowReset: true, // Whether a time can be resetted once entered
 			title: 'Timepicker' // Title in opened state
 		};
 		this.template = {
@@ -289,7 +290,7 @@
 		var is24h = this.options.mode === '24h';
 		var timePattern = is24h ? this.template.time24 : this.template.time12;
 
-		if (!time && !value) { // Empty string, reset time
+		if (!time && !value && this.options.allowReset) { // Empty string, reset time
 			this.time = {};
 			this.displayTime = '';
 		} else if (time) { // A time format was recognized
