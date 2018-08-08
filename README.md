@@ -84,6 +84,7 @@ The appointment-picker can be configured with options
 - `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increases the size of the picker and the appointments by setting a `is-large` modifier
 - `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
+- `leadingZero` adds leading zero to single-digit hour if true (i.e. 07:15)
 - `title` defines the picker's heading
 
 __Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
@@ -175,7 +176,7 @@ For screen reader support add both a `aria-label` and `aria-live` properties on 
 
 ### Legacy browser support (i.e. IE9)
 
-Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply load the polyfill from a CDN in your html head.
+Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply add the polyfill [from a CDN](https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js) in your html head.
 
 ## Author & License
 - Jan Suwart | MIT License
