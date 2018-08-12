@@ -2,7 +2,7 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker
  *
  * @module Appointment-Picker
- * @version 1.1.2
+ * @version 1.2.0
  *
  * @author Jan Suwart
 */
@@ -35,6 +35,8 @@
 			mode: '24h', // Whether to use 24h or 12h system
 			large: false, // Whether large button style
 			static: false, // Whether to position static (always open)
+			leadingZero: false, // Whether to zero pad hour (i.e. 07:15)
+			allowReset: true, // Whether a time can be resetted once entered
 			title: 'Timepicker' // Title in opened state
 		};
 		this.template = {
@@ -288,17 +290,18 @@
 		var is24h = this.options.mode === '24h';
 		var timePattern = is24h ? this.template.time24 : this.template.time12;
 
-		if (!time && !value) { // Empty string, reset time
+		if (!time && !value && this.options.allowReset) { // Empty string, reset time
 			this.time = {};
 			this.displayTime = '';
 		} else if (time) { // A time format was recognized
 			var hour = time.h;
 			var minute = time.m;
 			var isValid = _isValid(hour, minute, this.options, this.intervals, this.disabledArr);
+			var pad0 = this.options.leadingZero;
 
 			if (isValid) {
 				this.time = time;
-				this.displayTime = _printTime(this.time.h, this.time.m, timePattern, !is24h);
+				this.displayTime = _printTime(this.time.h, this.time.m, timePattern, !is24h, pad0);
 				_dispatchEvent(this.el, 'change', this.time);
 			}
 		}
@@ -360,6 +363,7 @@
 			} else if (/am/i.test(postfix) && hour === 12) {
 				hour = 0;
 			}
+			
 			return { h: hour, m: minute };
 		}
 	}
@@ -370,9 +374,10 @@
 	 * @param {Number} minute
 	 * @param {String} pattern - used time format
 	 * @param {Boolean} isAmPmMode - false if 24h mode
+	 * @param {Boolean} padZero - adds leading zero to single-digit hour
 	 * @return {String} time string, i.e. '12:30 pm' 
 	 */
-	function _printTime(hour, minute, pattern, isAmPmMode) {
+	function _printTime(hour, minute, pattern, isAmPmMode, padZero) {
 		var displayHour = hour;
 
 		if (isAmPmMode) {
@@ -384,7 +389,9 @@
 			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
 		}
 
-		return pattern.replace('H', displayHour).replace('M', _zeroPadTime(minute));
+		return pattern
+			.replace('H', padZero ? _zeroPadTime(displayHour) : displayHour)
+			.replace('M', _zeroPadTime(minute));
 	}
 
 	// Find next sibling of item that is not disabled (otherwise return null)
@@ -428,7 +435,7 @@
 			for (var j = 0; j < intervals.length; j++) { // Iterate minutes by possible intervals
 				var minute = intervals[j];
 				var isDisabled = !_isValid(hour, minute, opt, intervals, disabledArr);
-				var timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode);
+				var timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode, opt.leadingZero);
 				// Replace timeTemplate placeholders with time and disabled flag
 				inner += tpl.inner
 					.replace('{{time}}', timeTemplate)

@@ -38,8 +38,9 @@
 var $picker2 = $('#time-2').appointmentPicker({
 	title: 'Select an appointment',
 	interval: 15,
-	startTime: 10,
-	endTime: 16,
+	startTime: 8,
+	endTime: 14,
+	leadingZero: true,
 	large: true
 });</pre>
 	</p>
@@ -56,8 +57,9 @@ var $picker2 = $('#time-2').appointmentPicker({
 		var $picker2 = $('#time-2').appointmentPicker({
 			title: 'Select an appointment',
 			interval: 15,
-			startTime: 10,
-			endTime: 16,
+			startTime: 8,
+			endTime: 14,
+			leadingZero: true,
 			large: true
 		});
 	</script>
@@ -91,6 +93,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 	minTime: 13,
 	maxTime: 17,
 	disabled: ['4:00 pm', '4:30 pm'],
+	allowReset: false,
 	large: true
 });</pre>
 	</p>
@@ -114,6 +117,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			minTime: 13,
 			maxTime: 17,
 			disabled: ['4:00 pm', '4:30 pm'],
+			allowReset: false,
 			large: true
 		});
 	</script>

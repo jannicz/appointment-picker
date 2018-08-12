@@ -5,7 +5,6 @@ A lightweight, accessible and customizable javascript timepicker widget. Accessi
 ## Yet another timepicker? - Advantages
  - no dependencies
  - tiny (6KB minified, 2KB gzipped)
- - can be used as jQuery plugin or standalone
  - only the listed times can be picked or entered, no validation necessary
  
 <a href="https://jannicz.github.io/appointment-picker/">
@@ -54,25 +53,6 @@ Initialize the picker using the `new` keyword
 var picker = new AppointmentPicker(document.getElementById('time-2'), {});
 ```
 
-### Use as jQuery plugin
-
-If you would like to use the appointment-picker as a jQuery plugin add following code before initializing
-```javascript
-// To use appointmentPicker as jQuery plugin
-$.fn.appointmentPicker = function(options) {
-  this.appointmentPicker = new AppointmentPicker(this[0], options);
-  return this;
-};
-```
-
-Now you can initialize the picker on any text input field using `$`
-```html
-<input id="time-1" type="text">
-```
-```javascript
-var $picker = $('#time-1').appointmentPicker();
-```
-
 ## Options
 The appointment-picker can be configured with options
 - `interval` sets the interval between appointments in minutes (`1-60`), if this number gets lower (more possible appointments) the picker will get longer
@@ -84,6 +64,8 @@ The appointment-picker can be configured with options
 - `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increases the size of the picker and the appointments by setting a `is-large` modifier
 - `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
+- `leadingZero` adds leading zero to single-digit hour if true (i.e. 07:15)
+- `allowReset` whether a time can be resetted once entered
 - `title` defines the picker's heading
 
 __Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
@@ -91,7 +73,6 @@ __Note:__ with `startTime` and `endTime` appointments below and above can be vis
 Pass the options into the the AppointmentPicker call
 
 ```javascript
-// Without dependency
 var picker = new AppointmentPicker(document.getElementById('time-2'), {
   interval: 30,
   mode: '12h',
@@ -102,11 +83,6 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
   disabled: ['16:30', '17:00'],
   large: true
 });
-
-// Using jQuery
-$('#time-1').appointmentPicker({
-  interval: 15
-});
 ```
 
 ## Methods
@@ -116,8 +92,6 @@ To get the current time programmatically from a picker instance use
 ```javascript
 // Without dependency
 picker.getTime();
-// Using jQuery
-$picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
 ```
 
 To programmatically open a picker instance call
@@ -160,6 +134,33 @@ For screen reader support add both a `aria-label` and `aria-live` properties on 
 <input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 ```
 
+### Use as jQuery plugin
+
+If you would like to use the appointment-picker as a jQuery plugin add following code before initializing
+```javascript
+$.fn.appointmentPicker = function(options) {
+  this.appointmentPicker = new AppointmentPicker(this[0], options);
+  return this;
+};
+```
+
+Now you can initialize the picker on any text input field using `$`
+```html
+<input id="time-1" type="text">
+```
+
+```javascript
+var $picker = $('#time-1').appointmentPicker();
+
+// Or pass in options
+$('#time-1').appointmentPicker({
+  interval: 15
+});
+
+// And access all exposed methods using jQuery
+$picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
+```
+
 ## Best practices
 - appointment-picker neither installs any event listeners outside of the input nor it adds any dom elements until it is opened by the user
 - it can be destroyed using its the exposed destroy method that causes all event listeners and dom elements to be removed (i.e. if used in a single page application)
@@ -175,7 +176,7 @@ For screen reader support add both a `aria-label` and `aria-live` properties on 
 
 ### Legacy browser support (i.e. IE9)
 
-Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply load the polyfill from a CDN in your html head.
+Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply add the polyfill [from a CDN](https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js) in your html head.
 
 ## Author & License
 - Jan Suwart | MIT License
