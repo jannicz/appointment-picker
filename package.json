@@ -5,7 +5,8 @@
   "main": "js/appointment-picker.js",
   "scripts": {
     "uglify": "uglifyjs ./js/appointment-picker.js -c -m -o ./js/appointment-picker.min.js",
-    "css": "node-sass css/appointment-picker.scss css/appointment-picker.css"
+    "css": "node-sass css/appointment-picker.scss css/appointment-picker.css",
+    "start": "webpack-dev-server --config ./webpack.config.js --mode development"
   },
   "repository": {
     "type": "git",
@@ -18,8 +19,17 @@
   },
   "homepage": "https://github.com/jannicz/appointment-picker#readme",
   "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
     "node-sass": "^4.9.2",
-    "uglify-es": "^3.2.2"
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "uglify-es": "^3.2.2",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1"
   },
   "keywords": [
     "appointments",
