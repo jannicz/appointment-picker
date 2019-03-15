@@ -1,3 +1,10 @@
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+
+const htmlWebpackPlugin = new HtmlWebPackPlugin({
+    template: './example-react/react-embed.html'
+    // filename: './react-embed-p.html'
+});
+
 module.exports = {
     entry: './example-react/index.js',
     module: {
@@ -6,9 +13,14 @@ module.exports = {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: ['babel-loader']
+            },
+            {
+                test:/\.css$/,
+                use:['style-loader','css-loader']
             }
         ]
     },
+    plugins: [htmlWebpackPlugin],
     resolve: {
         extensions: ['*', '.js', '.jsx']
     },

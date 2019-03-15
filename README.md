@@ -31,25 +31,23 @@ Add both the stylesheet and the script
 </script>
 ```
 
-## AMD / CommonJS wrapper
-Appointment-Picker supports AMD and CommonJS import
+## Import
+Import Appointment-Picker using
 
-```javascript
-// CommonJS (Node, Browserify, Webpack)
+```js
+// Webpack (React, Angular, ES6)
+import AppointmentPicker from 'appointment-picker';
+
+// CommonJS (Node, Browserify)
 const AppointmentPicker = require('appointment-picker');
-
-// AMD (RequireJS)
-require(['appointment-picker'], function(AppointmentPicker) {
-  new AppointmentPicker(...);
-});
 ```
 
-### Use without any dependency
+### Use (vanilla-js)
 Initialize the picker using the `new` keyword
 ```html
 <input id="time-2" type="text" value="10:00">
 ```
-```javascript
+```js
 var picker = new AppointmentPicker(document.getElementById('time-2'), {});
 ```
 
@@ -72,7 +70,7 @@ __Note:__ with `startTime` and `endTime` appointments below and above can be vis
 
 Pass the options into the the AppointmentPicker call
 
-```javascript
+```js
 var picker = new AppointmentPicker(document.getElementById('time-2'), {
   interval: 30,
   mode: '12h',
@@ -86,31 +84,30 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
 ```
 
 ## Methods
-The appointment-picker exposes several functions to change its behaviour from outside ([example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html)). You can both use it with or without jQuery. While using jQuery always remember to add `$pickerReference.appointmentPicker.functionName()` to your picker reference.
+The appointment-picker exposes several functions to change its behaviour from outside ([example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html)).
 
 To get the current time programmatically from a picker instance use
-```javascript
-// Without dependency
+```js
 picker.getTime();
 ```
 
 To programmatically open a picker instance call
-```javascript
+```js
 picker.open();
 ```
 
 To set a time of a picker instance (empty string resets the time)
-```javascript
+```js
 picker.setTime('10:30');
 ```
 
 To close it
-```javascript
+```js
 picker.close();
 ```
 
 To destroy the picker instance and remove both the markup and all event listeners
-```javascript
+```js
 picker.destroy();
 ```
 
@@ -120,12 +117,24 @@ Appointment-picker exposes events for hooking into the functionality:
 - `change.appo.picker` contains a property `time` and is triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
 - `close.appo.picker` is fired each time the picker is closed
 
-```javascript
+```js
 document.body.addEventListener('change.appo.picker', function(e) { var time = e.time; }, false);
 ```
 
 ## Styling
-All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-picker-list-item`. Depending on your project, you can either overwrite them using your own CSS or by modifying the provided CSS.
+All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-picker-list-item`. You can either copy and modify the provided CSS, or import it using:
+
+```css
+/* Using Sass/Scss */
+@import '~appointment-picker/css/appointment-picker';
+```
+
+or in your javascript file
+
+```js
+// using a css-loader
+import '../node_modules/appointment-picker/css/appointment-picker.css';
+```
 
 ## Accessibility
 
@@ -134,10 +143,12 @@ For screen reader support add both a `aria-label` and `aria-live` properties on 
 <input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 ```
 
+## Integration into libs/frameworks
+
 ### Use as jQuery plugin
 
 If you would like to use the appointment-picker as a jQuery plugin add following code before initializing
-```javascript
+```js
 $.fn.appointmentPicker = function(options) {
   this.appointmentPicker = new AppointmentPicker(this[0], options);
   return this;
@@ -149,7 +160,7 @@ Now you can initialize the picker on any text input field using `$`
 <input id="time-1" type="text">
 ```
 
-```javascript
+```js
 var $picker = $('#time-1').appointmentPicker();
 
 // Or pass in options
@@ -161,10 +172,81 @@ $('#time-1').appointmentPicker({
 $picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
 ```
 
-## Best practices
-- appointment-picker neither installs any event listeners outside of the input nor it adds any dom elements until it is opened by the user
-- it can be destroyed using its the exposed destroy method that causes all event listeners and dom elements to be removed (i.e. if used in a single page application)
-- there is automated testing ([Mocha](https://mochajs.org) and [Chai](http://chaijs.com/api/assert)) to assert that the exposed core functions and the date parser behave correctly ([see specs page](https://jannicz.github.io/appointment-picker/tests/tests.html))
+### Use with React
+
+Appointment Picker can be easily integrated into a React component. Simply import the node module and use `React.createRef()` to pass the DOM element when calling `new AppointmentPicker` ([see example](https://jannicz.github.io/appointment-picker/example-react/react-embed.html))
+
+```js
+import AppointmentPicker from 'appointment-picker';
+
+class AppoPicker extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.pickerRef = React.createRef();
+        this.onTimeSelect = this.onTimeSelect.bind(this);
+    }
+
+    onTimeSelect(event) {
+        console.log('change.appo.picker', event.time);
+    }
+
+	render() {
+        return <input type="text" ref={ this.pickerRef }></input>;
+	}
+
+    componentDidMount() {
+    	this.picker = new AppointmentPicker(this.pickerRef.current, {});
+        this.pickerRef.current.addEventListener('change.appo.picker', this.onTimeSelect);
+    }
+
+    componentWillUnmount() {
+        this.pickerRef.current.removeEventListener('change.appo.picker', this.onTimeSelect);
+        this.picker.destroy();
+    }
+}
+```
+
+### Use with Angular
+
+To integrate AppointmentPicker into an Angular component, import it's CSS, create a `@ViewChild` reference (`#pickerInput`) and pass it's nativeElement when calling `new AppointmentPicker`.
+
+```css
+@import '~appointment-picker/css/appointment-picker';
+```
+
+```html
+<input #pickerInput type="text">
+```
+
+```js
+import AppointmentPicker from 'appointment-picker';
+
+@Component({
+  selector: 'xyz-picker',
+  templateUrl: './picker.component.html',
+  styleUrls: ['./picker.component.scss'],
+  // Disable View Encapsulation to pass down the picker's CSS styles
+  encapsulation: ViewEncapsulation.None
+})
+export class PickerComponent implements OnInit, OnDestroy {
+
+  @ViewChild('pickerInput') input: ElementRef;
+
+  picker: AppointmentPicker;
+
+  @HostListener('change.appo.picker', ['$event'])
+  onChangeTime(event: any) {
+    console.log('change.appo.picker', event.time);
+  }
+
+  ngOnInit() {
+    this.picker = new AppointmentPicker(this.input.nativeElement, {});
+  }
+
+  ngOnDestroy() { this.picker.destroy(); }
+}
+```
 
 ## Browser Support (tested)
 - Chrome
