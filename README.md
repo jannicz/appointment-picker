@@ -1,19 +1,19 @@
 # Appointment Picker
 
-A lightweight, accessible and customizable javascript timepicker widget. Accessibility is based on ARIA properties and keyboard support. The styling is kept simple and can be easily modified.
+A lightweight, accessible and customizable javascript timepicker widget.
 
 ## Yet another timepicker? - Advantages
  - no dependencies
  - tiny (6KB minified, 2KB gzipped)
  - only the listed times can be picked or entered, no validation necessary
  
-<a href="https://jannicz.github.io/appointment-picker/">
-  <strong>See Appointment-Picker Demo and Examples</strong>
-</a>
-
 <p>
   <img src="example/appointment-picker-large.png" width="550" alt=""/>
 </p>
+
+<a href="https://jannicz.github.io/appointment-picker/">
+  <strong>See Appointment-Picker Demo and Examples</strong>
+</a>
 
 ## Installation
 ```
@@ -31,8 +31,16 @@ Add both the stylesheet and the script
 </script>
 ```
 
-## Import
-Import Appointment-Picker using
+Initialize the picker using the `new` keyword
+```html
+<input id="time-2" type="text" value="10:00">
+```
+```js
+var picker = new AppointmentPicker(document.getElementById('time-2'), {});
+```
+
+## Import (module)
+Using a module loader
 
 ```js
 // Webpack (React, Angular, ES6)
@@ -40,15 +48,6 @@ import AppointmentPicker from 'appointment-picker';
 
 // CommonJS (Node, Browserify)
 const AppointmentPicker = require('appointment-picker');
-```
-
-### Use (vanilla-js)
-Initialize the picker using the `new` keyword
-```html
-<input id="time-2" type="text" value="10:00">
-```
-```js
-var picker = new AppointmentPicker(document.getElementById('time-2'), {});
 ```
 
 ## Options
@@ -86,30 +85,11 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
 ## Methods
 The appointment-picker exposes several functions to change its behaviour from outside ([example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html)).
 
-To get the current time programmatically from a picker instance use
-```js
-picker.getTime();
-```
-
-To programmatically open a picker instance call
-```js
-picker.open();
-```
-
-To set a time of a picker instance (empty string resets the time)
-```js
-picker.setTime('10:30');
-```
-
-To close it
-```js
-picker.close();
-```
-
-To destroy the picker instance and remove both the markup and all event listeners
-```js
-picker.destroy();
-```
+- `picker.getTime()` - get the current time programmatically from a picker instance
+- `picker.open()` - open the picker instance
+- `picker.setTime('10:30')` - set a time of a picker instance (empty string resets the time)
+- `picker.close()` - close the picker
+- `picker.destroy()` - destroy the picker instance and remove both the markup and all event listeners
 
 ## Events
 Appointment-picker exposes events for hooking into the functionality:
@@ -143,7 +123,7 @@ For screen reader support add both a `aria-label` and `aria-live` properties on 
 <input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 ```
 
-## Integration into libs/frameworks
+## Integration
 
 ### Use as jQuery plugin
 
@@ -181,29 +161,29 @@ import AppointmentPicker from 'appointment-picker';
 
 class AppoPicker extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.pickerRef = React.createRef();
-        this.onTimeSelect = this.onTimeSelect.bind(this);
-    }
-
-    onTimeSelect(event) {
-        console.log('change.appo.picker', event.time);
-    }
-
-	render() {
-        return <input type="text" ref={ this.pickerRef }></input>;
-	}
-
-    componentDidMount() {
-    	this.picker = new AppointmentPicker(this.pickerRef.current, {});
-        this.pickerRef.current.addEventListener('change.appo.picker', this.onTimeSelect);
-    }
-
-    componentWillUnmount() {
-        this.pickerRef.current.removeEventListener('change.appo.picker', this.onTimeSelect);
-        this.picker.destroy();
-    }
+  constructor(props) {
+    super(props);
+    this.pickerRef = React.createRef();
+    this.onTimeSelect = this.onTimeSelect.bind(this);
+  }
+  
+  onTimeSelect(event) {
+    console.log('change.appo.picker', event.time);
+  }
+  
+  render() {
+    return <input type="text" ref={ this.pickerRef }></input>;
+  }
+  
+  componentDidMount() {
+    this.picker = new AppointmentPicker(this.pickerRef.current, {});
+    this.pickerRef.current.addEventListener('change.appo.picker', this.onTimeSelect);
+  }
+  
+  componentWillUnmount() {
+    this.pickerRef.current.removeEventListener('change.appo.picker', this.onTimeSelect);
+    this.picker.destroy();
+  }
 }
 ```
 
@@ -248,7 +228,7 @@ export class PickerComponent implements OnInit, OnDestroy {
 }
 ```
 
-## Browser Support (tested)
+## Browser Support
 - Chrome
 - Firefox
 - Safari (macOS 10 & iOS 9)
