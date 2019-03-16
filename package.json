@@ -1,8 +1,8 @@
 {
   "name": "appointment-picker",
   "version": "1.3.0",
-  "description": "customizable timepicker to be used with or without jQuery",
-  "main": "js/appointment-picker.min.js",
+  "description": "customizable timepicker widget compatible with jQuery, React & Angular",
+  "main": "js/appointment-picker.js",
   "scripts": {
     "uglify": "uglifyjs ./js/appointment-picker.js -c -m -o ./js/appointment-picker.min.js",
     "css": "node-sass css/appointment-picker.scss css/appointment-picker.css",
