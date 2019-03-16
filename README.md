@@ -1,6 +1,6 @@
 # Appointment Picker
 
-A lightweight, accessible and customizable javascript timepicker widget.
+A lightweight, accessible and customizable javascript timepicker widget
 
 ## Yet another timepicker? - Advantages
  - no dependencies
@@ -21,7 +21,7 @@ npm i -S appointment-picker
 ```
 
 ## Setup
-Add both the stylesheet and the script
+When using inside a static HTML file, add both the stylesheet and the script
 ```html
 <link rel="stylesheet" href="css/appointment-picker.css">
 <script src="js/appointment-picker.min.js"></script>
@@ -31,16 +31,8 @@ Add both the stylesheet and the script
 </script>
 ```
 
-Initialize the picker using the `new` keyword
-```html
-<input id="time-2" type="text" value="10:00">
-```
-```js
-var picker = new AppointmentPicker(document.getElementById('time-2'), {});
-```
-
-## Import (module)
-Using a module loader
+## Import
+When using with a module loader, import the node-module
 
 ```js
 // Webpack (React, Angular, ES6)
@@ -48,6 +40,14 @@ import AppointmentPicker from 'appointment-picker';
 
 // CommonJS (Node, Browserify)
 const AppointmentPicker = require('appointment-picker');
+```
+
+Initialize the picker using the `new` keyword
+```html
+<input id="time" type="text" value="10:00">
+```
+```js
+var picker = new AppointmentPicker(document.getElementById('time'), {});
 ```
 
 ## Options
@@ -67,7 +67,7 @@ The appointment-picker can be configured with options
 
 __Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
 
-Pass the options into the the AppointmentPicker call
+Pass the options into the the AppointmentPicker invocation
 
 ```js
 var picker = new AppointmentPicker(document.getElementById('time-2'), {
@@ -102,25 +102,19 @@ document.body.addEventListener('change.appo.picker', function(e) { var time = e.
 ```
 
 ## Styling
-All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-picker-list-item`. You can either copy and modify the provided CSS, or import it using:
+All appointment-picker styles are namespaced with `.appo-picker`, i.e. `.appo-picker-list-item`.
+You can either copy and modify the provided CSS, or import it using
 
 ```css
-/* Using Sass/Scss */
+/* Using sass/scss */
 @import '~appointment-picker/css/appointment-picker';
 ```
 
 or in your javascript file
 
 ```js
-// using a css-loader
+// Using a css-loader inside JS (relative path to your node_modules folder)
 import '../node_modules/appointment-picker/css/appointment-picker.css';
-```
-
-## Accessibility
-
-For screen reader support add both a `aria-label` and `aria-live` properties on the input field
-```html
-<input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 ```
 
 ## Integration
@@ -154,7 +148,8 @@ $picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
 
 ### Use with React
 
-Appointment Picker can be easily integrated into a React component. Simply import the node module and use `React.createRef()` to pass the DOM element when calling `new AppointmentPicker` ([see example](https://jannicz.github.io/appointment-picker/example-react/react-embed.html))
+Appointment Picker can be easily integrated into a React component. Simply import the node module and use `React.createRef()`
+to pass the DOM element when calling `new AppointmentPicker` ([see example](https://jannicz.github.io/appointment-picker/example/react.html))
 
 ```js
 import AppointmentPicker from 'appointment-picker';
@@ -167,12 +162,12 @@ class AppoPicker extends React.Component {
     this.onTimeSelect = this.onTimeSelect.bind(this);
   }
   
-  onTimeSelect(event) {
-    console.log('change.appo.picker', event.time);
-  }
-  
   render() {
     return <input type="text" ref={ this.pickerRef }></input>;
+  }
+
+  onTimeSelect(event) {
+    console.log(event.time);
   }
   
   componentDidMount() {
@@ -228,6 +223,13 @@ export class PickerComponent implements OnInit, OnDestroy {
 }
 ```
 
+## Accessibility
+
+For screen reader support add both a `aria-label` and `aria-live` properties on the input field
+```html
+<input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+```
+
 ## Browser Support
 - Chrome
 - Firefox
@@ -236,7 +238,7 @@ export class PickerComponent implements OnInit, OnDestroy {
 - IE11 / IE10
 - IE9 (with classList polyfill)
 
-### Legacy browser support (i.e. IE9)
+### Legacy browser support (IE9)
 
 Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply add the polyfill [from a CDN](https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js) in your html head.
 

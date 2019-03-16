@@ -1,20 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppoPicker from './picker';
-import '../example/demo.css';
+import AppoPicker from './react-component';
+import '../demo.css';
 
 const title = 'Appointment Picker Examples';
 
 console.log('React started...');
 
 ReactDOM.render(
-    <article>
+    <div>
         <h1>{ title }</h1>
         <h2>Embed into a React component</h2>
-        <p>
+        <div>
             <label>Time</label>
             <AppoPicker></AppoPicker>
-        </p>
-    </article>,
+        </div>
+    </div>,
     document.getElementById('app')
 );

@@ -1,7 +1,8 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 const htmlWebpackPlugin = new HtmlWebPackPlugin({
-    template: './example/react/react-embed.html'
+    template: './example/react/react-embed.html',
+    filename: './react.html'
 });
 
 module.exports = {
@@ -24,10 +25,8 @@ module.exports = {
         extensions: ['*', '.js', '.jsx']
     },
     output: {
-        path: __dirname + '/example/react',
-        filename: 'bundle.js'
-    },
-    devServer: {
-        contentBase: './example/react'
+        path: __dirname + '/example',
+        // publicPath: './example',
+        filename: 'react-component.min.js'
     }
 };

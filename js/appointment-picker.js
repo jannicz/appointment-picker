@@ -1,8 +1,8 @@
 /**
- * Appointment-Picker - a lightweight, accessible and customizable timepicker
+ * Appointment-Picker - a lightweight, accessible and customizable timepicker (ES3 syntax)
  *
  * @module Appointment-Picker
- * @version 1.2.0
+ * @version 1.3.0
  *
  * @author Jan Suwart
 */
@@ -293,6 +293,7 @@
 		if (!time && !value && this.options.allowReset) { // Empty string, reset time
 			this.time = {};
 			this.displayTime = '';
+            _dispatchEvent(this.el, 'change', this.time);
 		} else if (time) { // A time format was recognized
 			var hour = time.h;
 			var minute = time.m;
