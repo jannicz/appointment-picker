@@ -1,6 +1,6 @@
 {
   "name": "appointment-picker",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "customizable timepicker widget compatible with jQuery, React & Angular",
   "main": "js/appointment-picker.js",
   "scripts": {

@@ -1,8 +1,8 @@
 /**
- * Appointment-Picker - a lightweight, accessible and customizable timepicker (ES3 syntax)
+ * Appointment-Picker - a lightweight, accessible and customizable timepicker (ES5 syntax)
  *
  * @module Appointment-Picker
- * @version 1.3.0
+ * @version 1.4.0
  *
  * @author Jan Suwart
 */
@@ -26,7 +26,7 @@
 	 */
 	var AppointmentPicker = function(el, options) {
 		this.options = {
-			interval: 60, // Appointment intervall in minutes
+			interval: 60, // Appointment interval in minutes
 			minTime: 0, // min pickable hour (1-24)
 			maxTime: 24, // max pickable hour (1-24)
 			startTime: 0, // min displayed hour (1-24)
@@ -34,16 +34,15 @@
 			disabled: [], // Array of disabled times, i.e. ['10:30', ...]
 			mode: '24h', // Whether to use 24h or 12h system
 			large: false, // Whether large button style
-			static: false, // Whether to position static (always open)
 			leadingZero: false, // Whether to zero pad hour (i.e. 07:15)
 			allowReset: true, // Whether a time can be resetted once entered
-			title: 'Timepicker' // Title in opened state
+			title: 'Timepicker', // Title
+			template: {
+				inner: '<li class="appo-picker-list-item {{disabled}}"><input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
+				outer: '<span class="appo-picker-title">{{title}}</span><ul class="appo-picker-list">{{innerHtml}}</ul>'
+			}
 		};
-		this.template = {
-			inner: '<li class="appo-picker-list-item {{disabled}}">' +
-				'<input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
-			outer: '<span class="appo-picker-title">{{title}}</span>' +
-				'<ul class="appo-picker-list">{{innerHtml}}</ul>',
+		this.timeTemplate = {
 			time12: 'H:M apm',
 			time24: 'H:M'
 		};
@@ -99,18 +98,7 @@
 		_this.setTime(_this.el.value);
 		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
-
-		if (!_this.options.static) { // Default positioning 
-			el.addEventListener('focus', _this.openEventFn);
-		} else {
-			// Render the picker in position static, don't register onOpen event
-			_this.picker = _build(_this);
-			_this.picker.classList.add('is-position-static');
-			_this.picker.addEventListener('click', _this.selectionEventFn);
-			_this.isOpen = true;
-
-			_this.render();
-		}
+		el.addEventListener('focus', _this.openEventFn);
 	}
 
 	// Attach visibility classes and set the picker's position
@@ -127,15 +115,13 @@
 			}
 			if (this.time.hasOwnProperty('h')) {
 				var selectedEl = this.picker.querySelector('[value="' + this.displayTime + '"]');
-				
+
 				if (selectedEl) {
 					selectedEl.classList.add('is-selected');
 				}
 			}
-			if (!this.options.static) {
-				this.picker.style.top = bottom + 'px';
-				this.picker.style.left = left + 'px';
-			}
+			this.picker.style.top = bottom + 'px';
+			this.picker.style.left = left + 'px';
 		} else {
 			this.picker.classList.remove('is-open');
 		}
@@ -211,13 +197,8 @@
 		if (!e.target.value) return;
 
 		this.setTime(e.target.value);
-		
-		if (_this.options.static) {
-			this.render();
-		} else {
-			this.el.focus();
-			setTimeout(function() { _this.close(null); }, 100);
-		}
+		this.el.focus();
+		setTimeout(function() { _this.close(null); }, 100);
 	}
 
 	// Handles manual input changes on input field
@@ -288,12 +269,12 @@
 	AppointmentPicker.prototype.setTime = function(value) {
 		var time = _parseTime(value);
 		var is24h = this.options.mode === '24h';
-		var timePattern = is24h ? this.template.time24 : this.template.time12;
+		var timePattern = is24h ? this.timeTemplate.time24 : this.timeTemplate.time12;
 
 		if (!time && !value && this.options.allowReset) { // Empty string, reset time
 			this.time = {};
 			this.displayTime = '';
-            _dispatchEvent(this.el, 'change', this.time);
+			_dispatchEvent(this.el, 'change', this.time);
 		} else if (time) { // A time format was recognized
 			var hour = time.h;
 			var minute = time.m;
@@ -364,19 +345,19 @@
 			} else if (/am/i.test(postfix) && hour === 12) {
 				hour = 0;
 			}
-			
+
 			return { h: hour, m: minute };
 		}
 	}
 
 	/**
 	 * Create time considering am/pm conventions
-	 * @param {Number} hour 
+	 * @param {Number} hour
 	 * @param {Number} minute
 	 * @param {String} pattern - used time format
 	 * @param {Boolean} isAmPmMode - false if 24h mode
 	 * @param {Boolean} padZero - adds leading zero to single-digit hour
-	 * @return {String} time string, i.e. '12:30 pm' 
+	 * @return {String} time string, i.e. '12:30 pm'
 	 */
 	function _printTime(hour, minute, pattern, isAmPmMode, padZero) {
 		var displayHour = hour;
@@ -410,7 +391,7 @@
 	// Create a dom node containing the markup for the picker
 	function _build(_this) {
 		var node = document.createElement('div');
-		node.innerHTML = _assemblePicker(_this.options, _this.template, _this.intervals, _this.disabledArr);
+		node.innerHTML = _assemblePicker(_this.options, _this.options.template, _this.intervals, _this.disabledArr, _this.timeTemplate);
 		node.className = ('appo-picker' + (_this.options.large ? ' is-large' : ''));
 		node.setAttribute('aria-hidden', true);
 		_this.el.insertAdjacentElement('afterend', node);
@@ -424,15 +405,16 @@
 	 * @param {Object} tpl - template (see above)
 	 * @param {Array} intervals - array holding interval permutations
 	 * @param {Array} disabledArr - array holding disabled times
+	 * @param {Object} timeTpl - template for 12 and 24h
 	 */
-	function _assemblePicker(opt, tpl, intervals, disabledArr) {
+	function _assemblePicker(opt, tpl, intervals, disabledArr, timeTpl) {
 		var start = opt.startTime;
 		var end = opt.endTime;
 		var inner = '';
 		var isAmPmMode = opt.mode === '12h';
-		var timePattern = isAmPmMode ? tpl.time12 : tpl.time24;
+		var timePattern = isAmPmMode ? timeTpl.time12 : timeTpl.time24;
 
-		for (var hour = start; hour < end; hour++) { // Iterate hours start to end	
+		for (var hour = start; hour < end; hour++) { // Iterate hours start to end
 			for (var j = 0; j < intervals.length; j++) { // Iterate minutes by possible intervals
 				var minute = intervals[j];
 				var isDisabled = !_isValid(hour, minute, opt, intervals, disabledArr);

@@ -11,16 +11,28 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="../js/appointment-picker.js"></script>
 	<style type="text/css">
+		.your-wrapper {
+		    border: 3px solid green;
+		    box-shadow: #33aaff;
+			padding: 10px;
+		}
 		.appo-picker {
-		    max-width: 100%;
-		    border: none;
-		    box-shadow: none;
+		    max-width: 530px;
+		}
+		.your-title {
+		    font-size: 20px;
 		}
 		.appo-picker-list {
-			max-width: 100%;
+		    max-width: 530px;
+		}
+		.appo-picker button {
+			width: 50%;
 		}
 		.appo-picker-list-item {
-			width: 10%;
+			width: 100px;
+		}
+		.appo-picker-list-item input[type="button"] {
+			background-color: mistyrose;
 		}
 	</style>
 </head>
@@ -28,31 +40,46 @@
 	<article>
 		<h1>Appointment Picker Examples</h1>
 
-		<h2>Render on init</h2>
+		<h2>Render custom template</h2>
 		<p>
 			<label for="time">Time</label>
 			<input id="time" type="text" value="10:05" placeholder="hh:mm" aria-label="Use up or down arrow keys to change time" aria-live="assertive">
 		</p>
 
 		<p>
-			Pass <code>static</code> as true to have the picker node rendered on initialization
+			Define your own <code>template</code> containing a custom JavaScript invocation (via button). Definition:
+			<ul>
+				<li>
+					<code>inner</code>: iterated input (optionally wrapped in some list item); must contain {{time}} placeholder and an optional {{disabled}} placeholder
+				</li>
+				<li>
+					<code>outer</code>: renders the frame, contains wrapper, title and optional functions; must contain {{innerHtml}} placeholder
+				</li>
+
+			</ul>
 		</p>
 
 <pre>new AppointmentPicker(document.getElementById('time'), {
-	interval: 5,
-	static: true,
+	interval: 15,
 	startTime: 10,
 	endTime: 18,
+	disabled: ['11:20', '13:30', '14:00', '15:30', '16:45', '17:00'],
+	template: {
+		inner: '&lt;li class="appo-picker-list-item {{disabled}}"&gt;&lt;input type="button" value="{{time}}" {{disabled}}&gt;&lt;/li&gt;',
+		outer: '&lt;div class="your-wrapper"&gt;&lt;button onclick="ap.close()"&gt;Close&lt;/button&gt;&lt;span class="your-title"&gt;Custom Markup&lt;/span&gt;&lt;ul class="appo-picker-list"&gt;{{innerHtml}}&lt;/ul&gt;&lt;button onclick="ap.setTime(\'15:00\')"&gt;Set 15:00&lt;/button&gt;&lt;/div&gt;'
+	}
 });</pre>
 
 		<script type="text/javascript">
-			new AppointmentPicker(document.getElementById('time'), {
-				interval: 5,
-				static: true,
+			var ap = new AppointmentPicker(document.getElementById('time'), {
+				interval: 15,
 				startTime: 10,
 				endTime: 18,
 				disabled: ['11:20', '13:30', '14:00', '15:30', '16:45', '17:00'],
-				title: 'Available Appointments'
+                template: {
+                    inner: '<div class="appo-picker-list-item {{disabled}}"><input type="button" value="{{time}}" {{disabled}}></div>',
+                    outer: '<div class="your-wrapper"><button onclick="ap.close()">Close</button><span class="your-title">Custom Markup</span><div class="appo-picker-list">{{innerHtml}}</div><button onclick="ap.setTime(\'15:00\')">Set 15:00</button></div>'
+                }
 			});
 		</script>
 

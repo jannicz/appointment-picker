@@ -25,6 +25,8 @@
 			<button id="open-2">Open</button>
 			<button id="set-2">Set 14:30</button>
 			<button id="set-3">Set 18:30</button>
+			<button id="get-4">Get time</button>
+			<span id="get-output"></span>
 		</p>
 
 
@@ -52,22 +54,10 @@
 			$('#set-3').on('click', function() {
 				$picker2.appointmentPicker.setTime('18:30');
 			});
-		</script>
-
-		<h2>Get the current time</h2>
-
-		<p>
-			<label for="time-3">Time</label>
-			<input id="time-3" type="text" value="12:00" placeholder="h:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
-			<pre>
-var picker = new AppointmentPicker(document.getElementById('time-3'), {});
-
-console.log(picker.getTime());</pre>
-		</p>
-
-		<script type="text/javascript">
-			var picker = new AppointmentPicker(document.getElementById('time-3'), {});
-			console.log(picker.getTime());
+			$('#get-4').on('click', function() {
+				var time = $picker2.appointmentPicker.getTime();
+				$('#get-output').text(time.h + ':' + time.m);
+			});
 		</script>
 
 		<h2>Get the current time by event listener</h2>
@@ -113,12 +103,12 @@ $('#remove-1').on('click', function() {
 				var $picker = $('#time-1').appointmentPicker();
 
 				$('#remove-1').on('click', function() {
-					// Access the picker instance of the jQuery object and call the destroy function 
+					// Access the picker instance of the jQuery object and call the destroy function
 					$picker.appointmentPicker.destroy();
 				});
 			</script>
 		</p>
-		
+
 		<p><small>Copyright Jan Suwart, MIT license</small></p>
 	</article>
 
