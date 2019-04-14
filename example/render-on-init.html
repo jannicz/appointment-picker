@@ -6,15 +6,21 @@
 	<title>Appointment Picker Examples</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="demo.css">
-	<link rel="stylesheet" href="../css/appointment-picker.css">
+	<link rel="stylesheet" href="../dist/appointment-picker.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-	<script src="../js/appointment-picker.js"></script>
+	<script src="../src/appointment-picker.js"></script>
 	<style type="text/css">
 		.your-wrapper {
 		    border: 3px solid green;
 		    box-shadow: #33aaff;
 			padding: 10px;
+		}
+		.your-close {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			width: 100px;
 		}
 		.appo-picker {
 		    max-width: 530px;
@@ -25,7 +31,8 @@
 		.appo-picker-list {
 		    max-width: 530px;
 		}
-		.appo-picker button {
+		.your-set-time {
+			margin: 10px 25% 0;
 			width: 50%;
 		}
 		.appo-picker-list-item {
@@ -59,14 +66,14 @@
 			</ul>
 		</p>
 
-<pre>new AppointmentPicker(document.getElementById('time'), {
+<pre>var ap = new AppointmentPicker(document.getElementById('time'), {
 	interval: 15,
 	startTime: 10,
 	endTime: 18,
 	disabled: ['11:20', '13:30', '14:00', '15:30', '16:45', '17:00'],
 	template: {
 		inner: '&lt;li class="appo-picker-list-item {{disabled}}"&gt;&lt;input type="button" value="{{time}}" {{disabled}}&gt;&lt;/li&gt;',
-		outer: '&lt;div class="your-wrapper"&gt;&lt;button onclick="ap.close()"&gt;Close&lt;/button&gt;&lt;span class="your-title"&gt;Custom Markup&lt;/span&gt;&lt;ul class="appo-picker-list"&gt;{{innerHtml}}&lt;/ul&gt;&lt;button onclick="ap.setTime(\'15:00\')"&gt;Set 15:00&lt;/button&gt;&lt;/div&gt;'
+		outer: '&lt;div class="your-wrapper"&gt;&lt;button class="your-close" onclick="ap.close()"&gt;Close&lt;/button&gt;&lt;span class="your-title"&gt;Custom Markup&lt;/span&gt;&lt;ul class="appo-picker-list"&gt;{{innerHtml}}&lt;/ul&gt;&lt;button class="your-set-time" onclick="ap.setTime(\'15:00\')"&gt;Set 15:00&lt;/button&gt;&lt;/div&gt;'
 	}
 });</pre>
 
@@ -78,7 +85,7 @@
 				disabled: ['11:20', '13:30', '14:00', '15:30', '16:45', '17:00'],
                 template: {
                     inner: '<div class="appo-picker-list-item {{disabled}}"><input type="button" value="{{time}}" {{disabled}}></div>',
-                    outer: '<div class="your-wrapper"><button onclick="ap.close()">Close</button><span class="your-title">Custom Markup</span><div class="appo-picker-list">{{innerHtml}}</div><button onclick="ap.setTime(\'15:00\')">Set 15:00</button></div>'
+                    outer: '<div class="your-wrapper"><button class="your-close" onclick="ap.close()">Close</button><span class="your-title">Custom Markup</span><div class="appo-picker-list">{{innerHtml}}</div><button class="your-set-time" onclick="ap.setTime(\'15:00\')">Set 15:00</button></div>'
                 }
 			});
 		</script>

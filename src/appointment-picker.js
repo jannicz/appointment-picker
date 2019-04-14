@@ -2,8 +2,8 @@
  * Appointment-Picker - a lightweight, accessible and customizable timepicker (ES5 syntax)
  *
  * @module Appointment-Picker
- * @version 1.4.0
- *
+ * @license MIT
+ * @version 2.0.0
  * @author Jan Suwart
 */
 (function (root, factory) {
@@ -40,11 +40,11 @@
 			template: {
 				inner: '<li class="appo-picker-list-item {{disabled}}"><input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
 				outer: '<span class="appo-picker-title">{{title}}</span><ul class="appo-picker-list">{{innerHtml}}</ul>'
+			},
+			timeFormat: {
+				time12: 'H:M apm',
+				time24: 'H:M'
 			}
-		};
-		this.timeTemplate = {
-			time12: 'H:M apm',
-			time24: 'H:M'
 		};
 
 		this.el = el;
@@ -269,7 +269,7 @@
 	AppointmentPicker.prototype.setTime = function(value) {
 		var time = _parseTime(value);
 		var is24h = this.options.mode === '24h';
-		var timePattern = is24h ? this.timeTemplate.time24 : this.timeTemplate.time12;
+		var timePattern = is24h ? this.options.timeFormat.time24 : this.options.timeFormat.time12;
 
 		if (!time && !value && this.options.allowReset) { // Empty string, reset time
 			this.time = {};
@@ -330,19 +330,19 @@
 	/**
 	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM ' or '10:30 am'
 	 * @returns {Object|undefined} containing {h: hour, m: minute} or undefined if unrecognized
-	 * @see https://regexr.com/3heaj
+	 * @see https://regexr.com/4c8fo
 	 */
 	function _parseTime(time) {
-		var match = time.match(/^\s*([\d]{1,2}):([\d]{2})[\s]*([ap][m])?.*$/i);
+		var match = time.match(/^\s*([\d]{1,2})\D?([\d]{2})\W?(a|p)?.*$/i);
 
 		if (match) {
 			var hour = Number(match[1]);
 			var minute = Number(match[2]);
 			var postfix = match[3];
 
-			if (/pm/i.test(postfix) && hour !== 12) {
+			if (/p/i.test(postfix) && hour !== 12) {
 				hour += 12;
-			} else if (/am/i.test(postfix) && hour === 12) {
+			} else if (/a/i.test(postfix) && hour === 12) {
 				hour = 0;
 			}
 
@@ -368,7 +368,7 @@
 			} else if (hour == 0) {
 				displayHour = 12;
 			}
-			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
+			pattern = pattern.replace(hour < 12 ? /p/i : /a/i, '');
 		}
 
 		return pattern
@@ -391,7 +391,7 @@
 	// Create a dom node containing the markup for the picker
 	function _build(_this) {
 		var node = document.createElement('div');
-		node.innerHTML = _assemblePicker(_this.options, _this.options.template, _this.intervals, _this.disabledArr, _this.timeTemplate);
+		node.innerHTML = _assemblePicker(_this.options, _this.options.template, _this.intervals, _this.disabledArr, _this.options.timeFormat);
 		node.className = ('appo-picker' + (_this.options.large ? ' is-large' : ''));
 		node.setAttribute('aria-hidden', true);
 		_this.el.insertAdjacentElement('afterend', node);
@@ -418,10 +418,10 @@
 			for (var j = 0; j < intervals.length; j++) { // Iterate minutes by possible intervals
 				var minute = intervals[j];
 				var isDisabled = !_isValid(hour, minute, opt, intervals, disabledArr);
-				var timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode, opt.leadingZero);
-				// Replace timeTemplate placeholders with time and disabled flag
+				var timeFormat = _printTime(hour, minute, timePattern, isAmPmMode, opt.leadingZero);
+				// Replace timeFormat placeholders with time and disabled flag
 				inner += tpl.inner
-					.replace('{{time}}', timeTemplate)
+					.replace('{{time}}', timeFormat)
 					.replace(/{{disabled}}/ig, isDisabled ? 'disabled': '');
 			}
 		}

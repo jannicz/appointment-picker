@@ -60,12 +60,13 @@ The appointment-picker can be configured with options
 - `endTime` hides all appointments above this hour, default is `24`
 - `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increases the size of the picker and the appointments by setting a `is-large` modifier
-- `template` pass own markup template (must contain at least an `input` tag, `{{time}}` and `{{innerHtml}}` placeholder) ([see example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
+- `template` own markup template (must contain at least an `input` tag, `{{time}}` and `{{innerHtml}}` placeholder) ([example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
+- `timeFormat` define custom time format (use placeholder `H` for hour, `M` for minute and `apm` for am/pm postfix), i.e. in 12h mode `H.M AP.M.` becomes `1.30 A.M` while in 24h mode `H/M` becomes `13/45` ([example](https://jannicz.github.io/appointment-picker/#custom-time-format))
 - `leadingZero` adds leading zero to single-digit hour if true (i.e. 07:15)
 - `allowReset` whether a time can be resetted once entered
 - `title` defines the picker's heading
 
-__Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
+__Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed. Entering an empty string into the input resets the time.
 
 Now you can pass your options into the the AppointmentPicker invocation
 
@@ -90,10 +91,10 @@ The appointment-picker exposes several functions to change its behaviour from ou
 
 Method | Desc.
 --- | ---
-`picker.open()` | open the picker instance
+`picker.open()` | open the picker popup
 `picker.getTime()` | get the current time programmatically from a picker instance
 `picker.setTime('10:30')` | set a time of a picker instance (empty string resets the time)
-`picker.close()` | close the picker
+`picker.close()` | close the picker popup
 `picker.destroy()` | destroy the picker instance and remove both the markup and all event listeners
 
 ## Events
