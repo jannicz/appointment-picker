@@ -24,14 +24,9 @@ describe("appointment-picker API test (custom template)", function() {
 			leadingZero: true,
 			disabled: ['15:00'],
 			allowReset: false,
-			template: {
-				inner: '<li><input type="button" value="{{time}}" {{disabled}}></li>',
-				outer: '<ul class="foo">{{innerHtml}}</ul>'
-			},
-			timeFormat: {
-				time12: 'H:M apm',
-				time24: 'H.M'
-			}
+			templateInner: '<li><input type="button" value="{{time}}" {{disabled}}></li>',
+			templateOuter: '<ul class="foo">{{innerHtml}}</ul>',
+			timeFormat24: 'H.M'
 		});
 
 		// Give focus to the input and therefore creating the picker dom elements
@@ -172,20 +167,23 @@ describe("appointment-picker API test (default template)", function() {
 			assert.include(pickerInstance.picker.classList.toString(), 'is-open');
 		});
 
+		it("adds is-open class on input element", function() {
+			assert.include(inputEl.classList.toString(), 'is-expanded');
+		});
 	});
 
 	describe("time manipulation and parsing", function() {
 
 		var testsAccept = [
-			{ args: " 10:00AM",  expected: { h: 10, m: 0 } },
-			{ args: " 10:30 ",   expected: { h: 10, m: 30 } },
-			{ args: "11:00 foo", expected: { h: 11, m: 0 } },
-			{ args: "12:00 pm",  expected: { h: 12, m: 0 } },
-			{ args: "1:00pm",    expected: { h: 13, m: 0 } },
-			{ args: "4:30 P.M.", expected: { h: 16, m: 30 } },
-			{ args: "18/00",     expected: { h: 18, m: 0 } },
-			{ args: "12.00am",   expected: { h: 0, m: 0 } },
-			{ args: "3-00pm",    expected: { h: 15, m: 0 } }
+			{ args: " 10:00AM",  expected: { h: 10, m: 0, displayTime: '10:00 am' } },
+			{ args: " 10:30 ",   expected: { h: 10, m: 30, displayTime: '10:30 am' } },
+			{ args: "11:00 foo", expected: { h: 11, m: 0, displayTime: '11:00 am' } },
+			{ args: "12:00 pm",  expected: { h: 12, m: 0, displayTime: '12:00 pm' } },
+			{ args: "1:00pm",    expected: { h: 13, m: 0, displayTime: '1:00 pm' } },
+			{ args: "4:30 P.M.", expected: { h: 16, m: 30, displayTime: '4:30 pm' } },
+			{ args: "18/00",     expected: { h: 18, m: 0, displayTime: '6:00 pm' } },
+			{ args: "12.00am",   expected: { h: 0, m: 0, displayTime: '12:00 am' } },
+			{ args: "3-00pm",    expected: { h: 15, m: 0, displayTime: '3:00 pm' } }
 		];
 
 		testsAccept.forEach(function(test) {
@@ -208,12 +206,12 @@ describe("appointment-picker API test (default template)", function() {
 		});
 
 		var testsReject = [
-			{ args: "20:00",   expected: { h: 18, m: 0 } },
-			{ args: "8:30 pm", expected: { h: 18, m: 0 } },
-			{ args: "1:30 PM", expected: { h: 18, m: 0 } },
-			{ args: "2:00PM",  expected: { h: 18, m: 0 } },
-			{ args: "dh4kj6",  expected: { h: 18, m: 0 } },
-			{ args: "18:30",   expected: { h: 18, m: 0 } }
+			{ args: "20:00",   expected: { h: 18, m: 0, displayTime: '6:00 pm' } },
+			{ args: "8:30 pm", expected: { h: 18, m: 0, displayTime: '6:00 pm' } },
+			{ args: "1:30 PM", expected: { h: 18, m: 0, displayTime: '6:00 pm' } },
+			{ args: "2:00PM",  expected: { h: 18, m: 0, displayTime: '6:00 pm' } },
+			{ args: "dh4kj6",  expected: { h: 18, m: 0, displayTime: '6:00 pm' } },
+			{ args: "18:30",   expected: { h: 18, m: 0, displayTime: '6:00 pm' } }
 		];
 
 		testsReject.forEach(function(test) {
@@ -262,6 +260,10 @@ describe("appointment-picker API test (default template)", function() {
 			setTimeout(done, 300);
 		});
 
+		it("removes is-expanded class on input element", function() {
+			assert.notInclude(inputEl.classList.toString(), 'is-expanded');
+		});
+
 		it("opens the picker", function(done) {
 			this.slow(500);
 			pickerInstance.open();
@@ -275,7 +277,7 @@ describe("appointment-picker API test (default template)", function() {
 			createKeyboardEv(40, inputEl);
 
 			var result = pickerInstance.getTime();
-			assert.deepEqual(result, { h: 12, m: 30 });
+			assert.deepEqual(result, { h: 12, m: 30, displayTime: '12:30 pm' });
 			setTimeout(done, 100);
 		});
 
@@ -287,7 +289,7 @@ describe("appointment-picker API test (default template)", function() {
 			pickerInstance.el.blur();
 
 			var result = pickerInstance.getTime();
-			assert.deepEqual(result, { h: 14, m: 30 });
+			assert.deepEqual(result, { h: 14, m: 30, displayTime: '2:30 pm' });
 			setTimeout(done, 100);
 		});
 	});

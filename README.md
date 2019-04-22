@@ -60,11 +60,13 @@ The appointment-picker can be configured with options
 - `endTime` hides all appointments above this hour, default is `24`
 - `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increases the size of the picker and the appointments by setting a `is-large` modifier
-- `template` own markup template (must contain at least an `input` tag, `{{time}}` and `{{innerHtml}}` placeholder) ([example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
-- `timeFormat` define custom time format (use placeholder `H` for hour, `M` for minute and `apm` for am/pm postfix), i.e. in 12h mode `H.M AP.M.` becomes `1.30 A.M` while in 24h mode `H/M` becomes `13/45` ([example](https://jannicz.github.io/appointment-picker/#custom-time-format))
 - `leadingZero` adds leading zero to single-digit hour if true (i.e. 07:15)
-- `allowReset` whether a time can be resetted once entered
+- `allowReset` whether a time can be reset once entered
 - `title` defines the picker's heading
+- `templateOuter` HTML template that renders the picker's outer frame (usually containing a wrapper and title), must contain `{{innerHtml}}` placeholder ([example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
+- `templateInner` template for repeated list items (time inputs), must contain at least an `input` tag, `{{time}}` and optional `{{disabled}}` placeholder, i.e. `<input type="button" value="{{time}}" {{disabled}}>`
+- `timeFormat24` custom time format for 24h mode (use placeholder `H` for hour, `M` for minute), i.e. `H/M` could evaluate to `13/45` ([example](https://jannicz.github.io/appointment-picker/#custom-time-format))
+- `timeFormat12` custom time format for am/pm mode (use placeholder `apm` for postfix - the algorithm will remove either the a or the p from the pattern), i.e. `H.M AP.M.` could evaluate to `1.30 A.M`
 
 __Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed. Entering an empty string into the input resets the time.
 
@@ -79,10 +81,8 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
   startTime: 08,
   endTime: 24,
   disabled: ['16:30', '17:00'],
-  template: {
-    inner: '<li class="appo-picker-list-item {{disabled}}"><input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
-    outer: '<span class="appo-picker-title">{{title}}</span><ul class="appo-picker-list">{{innerHtml}}</ul>'
-  }
+  templateInner: '<li class="appo-picker-list-item {{disabled}}"><input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
+  templateOuter: '<span class="appo-picker-title">{{title}}</span><ul class="appo-picker-list">{{innerHtml}}</ul>'
 });
 ```
 
@@ -92,7 +92,7 @@ The appointment-picker exposes several functions to change its behaviour from ou
 Method | Desc.
 --- | ---
 `picker.open()` | open the picker popup
-`picker.getTime()` | get the current time programmatically from a picker instance
+`picker.getTime()` | get the current time programmatically from a picker instance, returns an object like `{ h: 14, m: 30, displayTime: '2:30 pm' }`
 `picker.setTime('10:30')` | set a time of a picker instance (empty string resets the time)
 `picker.close()` | close the picker popup
 `picker.destroy()` | destroy the picker instance and remove both the markup and all event listeners
@@ -100,8 +100,11 @@ Method | Desc.
 ## Events
 Appointment-picker exposes events for hooking into the functionality:
 
-- `change.appo.picker` contains a property `time` and is triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
+- `change.appo.picker` triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
+- `open.appo.picker` is fired each time the picker is opened
 - `close.appo.picker` is fired each time the picker is closed
+
+Each `event` contains 2 properties `time` and `displayTime`, i.e. `event.time: {'h':14,'m':30}` and `event.displayTime: '2:30 pm'`
 
 ```js
 document.body.addEventListener('change.appo.picker', function(e) { var time = e.time; }, false);
@@ -168,7 +171,7 @@ $('#time-1').appointmentPicker({
 });
 
 // And access all exposed methods using jQuery
-$picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
+$picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30, displayTime: '3:30 pm' }
 ```
 
 ### Use with React

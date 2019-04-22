@@ -27,7 +27,12 @@
 	<p>
 		<label for="time-1">Time</label>
 		<input id="time-1" type="text" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
-		<pre>var $picker = $('#time-1').appointmentPicker();</pre>
+		<pre>$.fn.appointmentPicker = function(options) {
+	this.appointmentPicker = new AppointmentPicker(this[0], options);
+	return this;
+};
+
+var $picker = $('#time-1').appointmentPicker();</pre>
 	</p>
 
 	<h2>Large w/ options (jQuery)</h2>
@@ -95,10 +100,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 	disabled: ['3:00 pm', '3:30 pm'],
 	allowReset: false,
 	large: true,
-	timeFormat: {
-		time12: 'H.M AP.M.',
-		time24: 'H.M'
-	}
+	timeFormat12: 'H.M AP.M.'
 });</pre>
 	</p>
 
@@ -123,10 +125,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			disabled: ['3:00 pm', '3:30 pm'],
 			allowReset: false,
 			large: true,
-			timeFormat: {
-				time12: 'H.M AP.M.',
-				time24: 'H.M'
-			}
+			timeFormat12: 'H.M AP.M.'
 		});
 	</script>
 

@@ -8,7 +8,6 @@
 	<link rel="stylesheet" type="text/css" href="demo.css">
 	<link rel="stylesheet" href="../dist/appointment-picker.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="../src/appointment-picker.js"></script>
 	<style type="text/css">
 		.your-wrapper {
@@ -54,40 +53,54 @@
 		</p>
 
 		<p>
-			Define your own <code>template</code> containing a custom JavaScript invocation (via button). Definition:
+			Define your own <strong>template</strong> containing a custom JavaScript invocation (via a custom button):
 			<ul>
 				<li>
-					<code>inner</code>: iterated input (optionally wrapped in some list item); must contain {{time}} placeholder and an optional {{disabled}} placeholder
+					<code>templateOuter</code>: frame html template, contains wrapper, title and optional functions; must contain <strong>{{innerHtml}}</strong> placeholder
 				</li>
 				<li>
-					<code>outer</code>: renders the frame, contains wrapper, title and optional functions; must contain {{innerHtml}} placeholder
+					<code>templateInner</code>: iterated input html template (optionally wrapped in some list item); must contain <strong>{{time}}</strong> placeholder and an optional <strong>{{disabled}}</strong> placeholder
 				</li>
 
 			</ul>
 		</p>
 
-<pre>var ap = new AppointmentPicker(document.getElementById('time'), {
+<pre>// Create picker reference
+var ap = new AppointmentPicker(document.getElementById('time'), {
 	interval: 15,
 	startTime: 10,
 	endTime: 18,
 	disabled: ['11:20', '13:30', '14:00', '15:30', '16:45', '17:00'],
-	template: {
-		inner: '&lt;li class="appo-picker-list-item {{disabled}}"&gt;&lt;input type="button" value="{{time}}" {{disabled}}&gt;&lt;/li&gt;',
-		outer: '&lt;div class="your-wrapper"&gt;&lt;button class="your-close" onclick="ap.close()"&gt;Close&lt;/button&gt;&lt;span class="your-title"&gt;Custom Markup&lt;/span&gt;&lt;ul class="appo-picker-list"&gt;{{innerHtml}}&lt;/ul&gt;&lt;button class="your-set-time" onclick="ap.setTime(\'15:00\')"&gt;Set 15:00&lt;/button&gt;&lt;/div&gt;'
-	}
-});</pre>
+	templateInner: '&lt;li class="appo-picker-list-item {{disabled}}"&gt;&lt;input type="button" value="{{time}}" {{disabled}}&gt;&lt;/li&gt;',
+	templateOuter: '&lt;div class="your-wrapper"&gt;&lt;button class="your-close" onclick="closePicker()"&gt;Close&lt;/button&gt;&lt;span class="your-title"&gt;Custom Markup&lt;/span&gt;&lt;ul class="appo-picker-list"&gt;{{innerHtml}}&lt;/ul&gt;&lt;button class="your-set-time" onclick="setTime('15:00')"&gt;Set 15:00&lt;/button&gt;&lt;/div&gt;'
+});
+
+function setTime(timeString) {
+	ap.setTime(timeString);
+}
+
+function closePicker() {
+	ap.close();
+}</pre>
 
 		<script type="text/javascript">
+			// Create picker reference
 			var ap = new AppointmentPicker(document.getElementById('time'), {
+				templateInner: '<div class="appo-picker-list-item {{disabled}}"><input type="button" value="{{time}}" {{disabled}}></div>',
+				templateOuter: '<div class="your-wrapper"><button class="your-close" onclick="closePicker()">Close</button><span class="your-title">Custom Markup</span><div class="appo-picker-list">{{innerHtml}}</div><button class="your-set-time" onclick="setTime(\'15:00\')">Set 15:00</button></div>',
 				interval: 15,
 				startTime: 10,
 				endTime: 18,
-				disabled: ['11:20', '13:30', '14:00', '15:30', '16:45', '17:00'],
-                template: {
-                    inner: '<div class="appo-picker-list-item {{disabled}}"><input type="button" value="{{time}}" {{disabled}}></div>',
-                    outer: '<div class="your-wrapper"><button class="your-close" onclick="ap.close()">Close</button><span class="your-title">Custom Markup</span><div class="appo-picker-list">{{innerHtml}}</div><button class="your-set-time" onclick="ap.setTime(\'15:00\')">Set 15:00</button></div>'
-                }
+				disabled: ['11:20', '13:30', '14:00', '15:30', '16:45', '17:00']
 			});
+
+			function setTime(timeString) {
+				ap.setTime(timeString);
+			}
+
+			function closePicker() {
+				ap.close();
+			}
 		</script>
 
 		<p><small>Copyright Jan Suwart, MIT license</small></p>

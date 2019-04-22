@@ -8,7 +8,6 @@
 	<link rel="stylesheet" type="text/css" href="demo.css">
 	<link rel="stylesheet" href="../dist/appointment-picker.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="../src/appointment-picker.js"></script>
 </head>
 <body>
@@ -31,13 +30,7 @@
 
 
 		<script type="text/javascript">
-			// To use appointmentPicker as jQuery plugin
-			$.fn.appointmentPicker = function(options) {
-			    this.appointmentPicker = new AppointmentPicker(this[0], options);
-			    return this;
-			};
-
-			var $picker2 = $('#time-2').appointmentPicker({
+			var picker2 = new AppointmentPicker(document.getElementById('time-2'), {
 				title: 'Timepicker',
 				interval: 30,
 				startTime: 10,
@@ -45,37 +38,52 @@
 				large: true
 			});
 
-			$('#open-2').on('click', function() {
-				$picker2.appointmentPicker.open();
+			document.getElementById('open-2').addEventListener('click', function() {
+				picker2.open();
 			});
-			$('#set-2').on('click', function() {
-				$picker2.appointmentPicker.setTime('14:30');
+			document.getElementById('set-2').addEventListener('click', function() {
+				picker2.setTime('14:30');
 			});
-			$('#set-3').on('click', function() {
-				$picker2.appointmentPicker.setTime('18:30');
+			document.getElementById('set-3').addEventListener('click', function() {
+				picker2.setTime('18:30');
 			});
-			$('#get-4').on('click', function() {
-				var time = $picker2.appointmentPicker.getTime();
-				$('#get-output').text(time.h + ':' + time.m);
+			document.getElementById('get-4').addEventListener('click', function() {
+				var time = picker2.getTime();
+				document.getElementById('get-output').innerHTML = JSON.stringify(time);
 			});
 		</script>
 
-		<h2>Get the current time by event listener</h2>
+		<pre>var picker2 = new AppointmentPicker(document.getElementById('time-2'), {});
+
+document.getElementById('open-2').addEventListener('click', function() {
+	picker2.open();
+});</pre>
+
+		<h2>Get the current time and action via event listener</h2>
 
 		<p>
 			<label for="time-ev">Time</label>
 			<input id="time-ev" type="text" value="18:00" placeholder="h:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 			<span id="time-ev-out">change the time</span>
+			<span id="action-ev-out"></span>
 			<pre>
-var picker = new AppointmentPicker(document.getElementById('time-ev'), {});
+new AppointmentPicker(document.getElementById('time-ev'), {});
 
-document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) { // code }, false);</pre>
+document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) {});
+document.getElementById('time-ev').addEventListener('close.appo.picker', function (e) {});
+document.getElementById('time-ev').addEventListener('open.appo.picker', function (e) {});</pre>
 
 			<script type="text/javascript">
-				var evPicker = new AppointmentPicker(document.getElementById('time-ev'), {});
+				new AppointmentPicker(document.getElementById('time-ev'), {});
 				// Add event listener on input field
 				document.getElementById('time-ev').addEventListener('change.appo.picker', function (e) {
-					document.getElementById('time-ev-out').innerHTML = JSON.stringify(e.time);
+					document.getElementById('time-ev-out').innerHTML = JSON.stringify(e.time) + ', ' + JSON.stringify(e.displayTime);
+				}, false);
+				document.getElementById('time-ev').addEventListener('close.appo.picker', function (e) {
+					document.getElementById('action-ev-out').innerHTML = 'close';
+				}, false);
+				document.getElementById('time-ev').addEventListener('open.appo.picker', function (e) {
+					document.getElementById('action-ev-out').innerHTML = 'open';
 				}, false);
 			</script>
 		</p>
@@ -86,25 +94,17 @@ document.getElementById('time-ev').addEventListener('change.appo.picker', functi
 			<label for="time-1">Time</label>
 			<input id="time-1" type="text" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 			<button id="remove-1">Destroy</button>
-			<pre>
-var $picker = $('#time-1').appointmentPicker();
+			<pre>var picker = new AppointmentPicker(document.getElementById('time-1'), {});
 
-$('#remove-1').on('click', function() {
-	$picker.appointmentPicker.destroy();
-});</pre>
+document.getElementById('remove-1').addEventListener('click', function() {
+	picker.destroy();
+});;</pre>
 
 			<script type="text/javascript">
-				// To use appointmentPicker as jQuery plugin
-				$.fn.appointmentPicker = function(options) {
-				    this.appointmentPicker = new AppointmentPicker(this[0], options);
-				    return this;
-				};
+				var picker = new AppointmentPicker(document.getElementById('time-1'), {});
 
-				var $picker = $('#time-1').appointmentPicker();
-
-				$('#remove-1').on('click', function() {
-					// Access the picker instance of the jQuery object and call the destroy function
-					$picker.appointmentPicker.destroy();
+				document.getElementById('remove-1').addEventListener('click', function() {
+					picker.destroy();
 				});
 			</script>
 		</p>
