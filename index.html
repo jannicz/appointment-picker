@@ -6,10 +6,10 @@
 	<title>Appointment Picker</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="example/demo.css">
-	<link rel="stylesheet" href="css/appointment-picker.css">
+	<link rel="stylesheet" href="dist/appointment-picker.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-	<script src="js/appointment-picker.js"></script>
+	<script src="src/appointment-picker.js"></script>
 </head>
 <body>
 	<article>
@@ -23,17 +23,22 @@
 		</a>
 	</p>
 
-	<h2>Default (jQuery)</h2>
+	<h2>Default (no options, jQuery)</h2>
 	<p>
 		<label for="time-1">Time</label>
 		<input id="time-1" type="text" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
-		<pre>var $picker = $('#time-1').appointmentPicker();</pre>
+		<pre>$.fn.appointmentPicker = function(options) {
+	this.appointmentPicker = new AppointmentPicker(this[0], options);
+	return this;
+};
+
+var $picker = $('#time-1').appointmentPicker();</pre>
 	</p>
 
-	<h2>Large w/ options (jQuery)</h2>
+	<h2>Leading zero (large, jQuery)</h2>
 	<p>
 		<label for="time-2">Time</label>
-		<input id="time-2" type="text" value="11:15" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+		<input id="time-2" type="text" value="8:15" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 		<pre>
 var $picker2 = $('#time-2').appointmentPicker({
 	title: 'Select an appointment',
@@ -64,7 +69,7 @@ var $picker2 = $('#time-2').appointmentPicker({
 		});
 	</script>
 
-	<h2>am/pm w/ options (vanilla-js)</h2>
+	<h2>Disabled array and min/maxTime (am/pm, vanillajs)</h2>
 	<p>
 		<label for="time-3">Time</label>
 		<input id="time-3" type="text" value="2:30 pm" placeholder="h:mm am" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
@@ -80,7 +85,7 @@ var picker = new AppointmentPicker(document.getElementById('time-3'), {
 });</pre>
 	</p>
 
-	<h2>am/pm large w/ options (vanilla-js)</h2>
+	<h2 id="custom-time-format">Custom time format (large, am/pm, vanillajs)</h2>
 	<p>
 		<label for="time-4">Time</label>
 		<input id="time-4" type="text" value="12:00 pm" placeholder="h:mm am" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
@@ -88,13 +93,14 @@ var picker = new AppointmentPicker(document.getElementById('time-3'), {
 new AppointmentPicker(document.getElementById('time-4'), {
 	interval: 15,
 	mode: '12h',
-	startTime: 12,
-	endTime: 18,
-	minTime: 13,
-	maxTime: 17,
-	disabled: ['4:00 pm', '4:30 pm'],
+	startTime: 11,
+	endTime: 16,
+	minTime: 11,
+	maxTime: 16,
+	disabled: ['3:00 pm', '3:30 pm'],
 	allowReset: false,
-	large: true
+	large: true,
+	timeFormat12: 'H.M AP.M.'
 });</pre>
 	</p>
 
@@ -104,7 +110,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			mode: '12h',
 			minTime: 10,
 			maxTime: 21,
-			startTime: 09,
+			startTime: 9,
 			endTime: 23,
 			disabled: ['1:30 pm', '2:00 pm', '7:30 pm']
 		});
@@ -112,13 +118,14 @@ new AppointmentPicker(document.getElementById('time-4'), {
 		new AppointmentPicker(document.getElementById('time-4'), {
 			interval: 15,
 			mode: '12h',
-			startTime: 12,
-			endTime: 18,
-			minTime: 13,
-			maxTime: 17,
-			disabled: ['4:00 pm', '4:30 pm'],
+			startTime: 11,
+			endTime: 16,
+			minTime: 11,
+			maxTime: 16,
+			disabled: ['3:00 pm', '3:30 pm'],
 			allowReset: false,
-			large: true
+			large: true,
+			timeFormat12: 'H.M AP.M.'
 		});
 	</script>
 
@@ -128,7 +135,7 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			<li><a href="example/react.html">React Integration Example</a></li>
 			<li><a href="example/exposed-functions.html">Calling exposed functions</a></li>
 			<li><a href="example/form-submit.html">Form embed Example</a></li>
-			<li><a href="example/render-on-init.html">Rendering into DOM on init</a></li>
+			<li><a href="example/render-on-init.html">Rendering custom (markup) template</a></li>
 		</ul>
 		<h3>Tests</h3>
 		<ul>

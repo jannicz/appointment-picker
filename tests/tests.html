@@ -3,22 +3,45 @@
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.css">
   <link rel="stylesheet" type="text/css" href="../example/demo.css">
-  <link rel="stylesheet" href="../css/appointment-picker.css">
+  <link rel="stylesheet" href="../dist/appointment-picker.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.js"></script>
   <script>
     mocha.setup('bdd'); // Use "tdd" interface
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
-  <script src="../js/appointment-picker.js"></script>
+  <script src="../src/appointment-picker.js"></script>
+
+  <style>
+    .foo {
+      width: 300px;
+      list-style-type: none;
+      padding: 0;
+    }
+    .foo input {
+      background-color: lightgrey;
+    }
+    .foo input.is-selected {
+      background-color: lightcoral;
+    }
+    .foo li {
+      display: inline-block;
+      width: 60px;
+      padding: 1px;
+      margin: 2px;
+    }
+  </style>
 </head>
 
 <body>
   <article style="border: none;">
     <!-- the picker test instance input field -->
-    <div style="padding: 50px 50px 200px 50px;">
+    <div style="padding: 20px 50px 20px 50px;">
       <label for="time-spec">Time</label>
-      <input id="time-spec" type="text" value="2:30 pm">
+      <input id="time-spec" type="text" value="00:33 foo">
+
+      <label for="time-spec-2" style="padding-left: 100px;">Time custom</label>
+      <input id="time-spec-2" type="text" value="14:30">
     </div>
 
     <!-- the script with tests -->

@@ -60,14 +60,17 @@ The appointment-picker can be configured with options
 - `endTime` hides all appointments above this hour, default is `24`
 - `disabled` array of disabled appointments, i.e. `['10:30', '1:15pm', ...]` - these times cannot be selected or entered and will be skipped using the keyboard arrows
 - `large` increases the size of the picker and the appointments by setting a `is-large` modifier
-- `static` if true, the picker gets rendered on initialization into the dom, open/close events are not registered, the picker is always visible ([see example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
 - `leadingZero` adds leading zero to single-digit hour if true (i.e. 07:15)
-- `allowReset` whether a time can be resetted once entered
+- `allowReset` whether a time can be reset once entered
 - `title` defines the picker's heading
+- `templateOuter` HTML template that renders the picker's outer frame (usually containing a wrapper and title), must contain `{{innerHtml}}` placeholder ([example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
+- `templateInner` template for repeated list items (time inputs), must contain at least an `input` tag, `{{time}}` and optional `{{disabled}}` placeholder, i.e. `<input type="button" value="{{time}}" {{disabled}}>`
+- `timeFormat24` custom time format for 24h mode (use placeholder `H` for hour, `M` for minute), i.e. `H/M` could evaluate to `13/45` ([example](https://jannicz.github.io/appointment-picker/#custom-time-format))
+- `timeFormat12` custom time format for am/pm mode (use placeholder `apm` for postfix - the algorithm will remove either the a or the p from the pattern), i.e. `H.M AP.M.` could evaluate to `1.30 A.M`
 
-__Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed ([example](https://jannicz.github.io/appointment-picker/example/form-submit.html)). Entering an empty string into the input resets the time.
+__Note:__ with `startTime` and `endTime` appointments below and above can be visually removed. If startTime is greater than `minTime` a lower time can still be manually set via the keyboard. On the other hand the picker does not accept lower hours than `minTime` and higher than `maxTime`. Manually entered times outside of the defined bounds will be rejected by the picker, no extra validation is therefore needed. Entering an empty string into the input resets the time.
 
-Pass the options into the the AppointmentPicker invocation
+Now you can pass your options into the the AppointmentPicker invocation
 
 ```js
 var picker = new AppointmentPicker(document.getElementById('time-2'), {
@@ -78,24 +81,30 @@ var picker = new AppointmentPicker(document.getElementById('time-2'), {
   startTime: 08,
   endTime: 24,
   disabled: ['16:30', '17:00'],
-  large: true
+  templateInner: '<li class="appo-picker-list-item {{disabled}}"><input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
+  templateOuter: '<span class="appo-picker-title">{{title}}</span><ul class="appo-picker-list">{{innerHtml}}</ul>'
 });
 ```
 
 ## Methods
 The appointment-picker exposes several functions to change its behaviour from outside ([example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html)).
 
-- `picker.getTime()` - get the current time programmatically from a picker instance
-- `picker.open()` - open the picker instance
-- `picker.setTime('10:30')` - set a time of a picker instance (empty string resets the time)
-- `picker.close()` - close the picker
-- `picker.destroy()` - destroy the picker instance and remove both the markup and all event listeners
+Method | Desc.
+--- | ---
+`picker.open()` | open the picker popup
+`picker.getTime()` | get the current time programmatically from a picker instance, returns an object like `{ h: 14, m: 30, displayTime: '2:30 pm' }`
+`picker.setTime('10:30')` | set a time of a picker instance (empty string resets the time)
+`picker.close()` | close the picker popup
+`picker.destroy()` | destroy the picker instance and remove both the markup and all event listeners
 
 ## Events
 Appointment-picker exposes events for hooking into the functionality:
 
-- `change.appo.picker` contains a property `time` and is triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
+- `change.appo.picker` triggered on each successful value change ([event example](https://jannicz.github.io/appointment-picker/example/exposed-functions.html))
+- `open.appo.picker` is fired each time the picker is opened
 - `close.appo.picker` is fired each time the picker is closed
+
+Each `event` contains 2 properties `time` and `displayTime`, i.e. `event.time: {'h':14,'m':30}` and `event.displayTime: '2:30 pm'`
 
 ```js
 document.body.addEventListener('change.appo.picker', function(e) { var time = e.time; }, false);
@@ -116,6 +125,25 @@ or in your javascript file
 // Using a css-loader inside JS (relative path to your node_modules folder)
 import '../node_modules/appointment-picker/css/appointment-picker.css';
 ```
+
+## Accessibility
+
+For screen reader support add both a `aria-label` and `aria-live` properties on the input field
+```html
+<input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+```
+
+## Browser Support
+- Chrome
+- Firefox
+- Safari (macOS 10 & iOS 9)
+- Edge
+- IE11 / IE10
+- IE9 (with classList polyfill)
+
+### Legacy browser support (IE9)
+
+Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply add the polyfill [from a CDN](https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js) in your html head.
 
 ## Integration
 
@@ -143,7 +171,7 @@ $('#time-1').appointmentPicker({
 });
 
 // And access all exposed methods using jQuery
-$picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30 }
+$picker.appointmentPicker.getTime(); // i.e. { h: 15, m: 30, displayTime: '3:30 pm' }
 ```
 
 ### Use with React
@@ -187,10 +215,12 @@ class AppoPicker extends React.Component {
 To integrate AppointmentPicker into an Angular component, import it's CSS, create a `@ViewChild` reference (`#pickerInput`) and pass it's nativeElement when calling `new AppointmentPicker`.
 
 ```css
+/* CSS, SCSS */
 @import '~appointment-picker/css/appointment-picker';
 ```
 
 ```html
+<!-- HTML -->
 <input #pickerInput type="text">
 ```
 
@@ -222,25 +252,6 @@ export class PickerComponent implements OnInit, OnDestroy {
   ngOnDestroy() { this.picker.destroy(); }
 }
 ```
-
-## Accessibility
-
-For screen reader support add both a `aria-label` and `aria-live` properties on the input field
-```html
-<input id="time-1" type="text" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
-```
-
-## Browser Support
-- Chrome
-- Firefox
-- Safari (macOS 10 & iOS 9)
-- Edge
-- IE11 / IE10
-- IE9 (with classList polyfill)
-
-### Legacy browser support (IE9)
-
-Add the [element.classList polyfill](https://www.npmjs.com/package/classlist-polyfill) by either importing it with a module loader or simply add the polyfill [from a CDN](https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js) in your html head.
 
 ## Author & License
 - Jan Suwart | MIT License

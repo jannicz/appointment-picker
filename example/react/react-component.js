@@ -2,16 +2,19 @@ import React from 'react';
 
 /** Use following imports if used outside this demo project */
 // import AppointmentPicker from 'appointment-picker';
-// import '../../../node_modules/appointment-picker/css/appointment-picker.css';
+// import '../../../node_modules/appointment-picker/dist/appointment-picker.css';
 
 /** Remove following imports if used in your own project */
-import AppointmentPicker from '../../js/appointment-picker';
-import '../../css/appointment-picker.css';
+import AppointmentPicker from '../../dist/appointment-picker.min';
+import '../../dist/appointment-picker.css';
 
 class AppoPicker extends React.Component {
 
     constructor(props) {
         super(props);
+        this.options = {
+          leadingZero: true
+        };
         this.state = { time: {} };
         this.pickerRef = React.createRef();
         this.onTimeSelect = this.onTimeSelect.bind(this);
@@ -32,7 +35,7 @@ class AppoPicker extends React.Component {
 	}
 
     componentDidMount() {
-    	this.picker = new AppointmentPicker(this.pickerRef.current, {});
+    	this.picker = new AppointmentPicker(this.pickerRef.current, this.options);
         this.pickerRef.current.addEventListener('change.appo.picker', this.onTimeSelect);
     }
 

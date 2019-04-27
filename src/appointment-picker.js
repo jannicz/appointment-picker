@@ -1,9 +1,9 @@
 /**
- * Appointment-Picker - a lightweight, accessible and customizable timepicker (ES3 syntax)
+ * Appointment-Picker - a lightweight, accessible and customizable timepicker (ES5 syntax)
  *
  * @module Appointment-Picker
- * @version 1.3.0
- *
+ * @license MIT
+ * @version 2.0.0
  * @author Jan Suwart
 */
 (function (root, factory) {
@@ -26,7 +26,7 @@
 	 */
 	var AppointmentPicker = function(el, options) {
 		this.options = {
-			interval: 60, // Appointment intervall in minutes
+			interval: 60, // Appointment interval in minutes
 			minTime: 0, // min pickable hour (1-24)
 			maxTime: 24, // max pickable hour (1-24)
 			startTime: 0, // min displayed hour (1-24)
@@ -34,18 +34,13 @@
 			disabled: [], // Array of disabled times, i.e. ['10:30', ...]
 			mode: '24h', // Whether to use 24h or 12h system
 			large: false, // Whether large button style
-			static: false, // Whether to position static (always open)
 			leadingZero: false, // Whether to zero pad hour (i.e. 07:15)
-			allowReset: true, // Whether a time can be resetted once entered
-			title: 'Timepicker' // Title in opened state
-		};
-		this.template = {
-			inner: '<li class="appo-picker-list-item {{disabled}}">' +
-				'<input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
-			outer: '<span class="appo-picker-title">{{title}}</span>' +
-				'<ul class="appo-picker-list">{{innerHtml}}</ul>',
-			time12: 'H:M apm',
-			time24: 'H:M'
+			allowReset: true, // Whether a time can be reset once entered
+			title: 'Timepicker', // Title
+			templateInner: '<li class="appo-picker-list-item {{disabled}}"><input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
+			templateOuter: '<span class="appo-picker-title">{{title}}</span><ul class="appo-picker-list">{{innerHtml}}</ul>',
+			timeFormat12: 'H:M apm', // Custom time format, must contain H and M placeholder
+			timeFormat24: 'H:M'
 		};
 
 		this.el = el;
@@ -99,45 +94,34 @@
 		_this.setTime(_this.el.value);
 		el.addEventListener('keyup', _this.keyEventFn);
 		el.addEventListener('change', _this.changeEventFn);
-
-		if (!_this.options.static) { // Default positioning 
-			el.addEventListener('focus', _this.openEventFn);
-		} else {
-			// Render the picker in position static, don't register onOpen event
-			_this.picker = _build(_this);
-			_this.picker.classList.add('is-position-static');
-			_this.picker.addEventListener('click', _this.selectionEventFn);
-			_this.isOpen = true;
-
-			_this.render();
-		}
+		el.addEventListener('focus', _this.openEventFn);
 	}
 
 	// Attach visibility classes and set the picker's position
 	AppointmentPicker.prototype.render = function() {
-		if (this.isOpen) {
+		if (this.isOpen && this.isInDom) {
 			var bottom = this.el.offsetTop + this.el.offsetHeight;
 			var left = this.el.offsetLeft;
 			var oldSelectedEl = this.picker.querySelector('input.is-selected');
 
 			this.picker.classList.add('is-open');
+			this.el.classList.add('is-expanded');
 
 			if (oldSelectedEl) {
 				oldSelectedEl.classList.remove('is-selected');
 			}
 			if (this.time.hasOwnProperty('h')) {
 				var selectedEl = this.picker.querySelector('[value="' + this.displayTime + '"]');
-				
+
 				if (selectedEl) {
 					selectedEl.classList.add('is-selected');
 				}
 			}
-			if (!this.options.static) {
-				this.picker.style.top = bottom + 'px';
-				this.picker.style.left = left + 'px';
-			}
-		} else {
+			this.picker.style.top = bottom + 'px';
+			this.picker.style.left = left + 'px';
+		} else if (this.isInDom) {
 			this.picker.classList.remove('is-open');
+			this.el.classList.remove('is-expanded');
 		}
 	};
 
@@ -157,6 +141,8 @@
 		this.picker.addEventListener('click', this.selectionEventFn);
 		this.picker.addEventListener('keyup', this.keyEventFn);
 		this.el.removeEventListener('click', this.clickEventFn);
+
+		_dispatchEvent(this.el, 'open', this.time, this.displayTime);
 
 		// Delay document click listener to prevent picker flashing
 		setTimeout(function() {
@@ -199,7 +185,7 @@
 		// Add an event listener to open on click regardless of mouse focus
 		this.el.addEventListener('click', this.clickEventFn);
 
-		_dispatchEvent(this.el, 'close', this.time);
+		_dispatchEvent(this.el, 'close', this.time, this.displayTime);
 	};
 
 	/**
@@ -211,13 +197,8 @@
 		if (!e.target.value) return;
 
 		this.setTime(e.target.value);
-		
-		if (_this.options.static) {
-			this.render();
-		} else {
-			this.el.focus();
-			setTimeout(function() { _this.close(null); }, 100);
-		}
+		this.el.focus();
+		setTimeout(function() { _this.close(null); }, 100);
 	}
 
 	// Handles manual input changes on input field
@@ -288,12 +269,12 @@
 	AppointmentPicker.prototype.setTime = function(value) {
 		var time = _parseTime(value);
 		var is24h = this.options.mode === '24h';
-		var timePattern = is24h ? this.template.time24 : this.template.time12;
+		var timePattern = is24h ? this.options.timeFormat24 : this.options.timeFormat12;
 
 		if (!time && !value && this.options.allowReset) { // Empty string, reset time
 			this.time = {};
 			this.displayTime = '';
-            _dispatchEvent(this.el, 'change', this.time);
+			_dispatchEvent(this.el, 'change', this.time, this.displayTime);
 		} else if (time) { // A time format was recognized
 			var hour = time.h;
 			var minute = time.m;
@@ -303,15 +284,16 @@
 			if (isValid) {
 				this.time = time;
 				this.displayTime = _printTime(this.time.h, this.time.m, timePattern, !is24h, pad0);
-				_dispatchEvent(this.el, 'change', this.time);
+				_dispatchEvent(this.el, 'change', this.time, this.displayTime);
 			}
 		}
+		this.render();
 		this.el.value = this.displayTime;
 	};
 
 	// Time getter returns time as object
 	AppointmentPicker.prototype.getTime = function() {
-		return this.time;
+		return { h: this.time.h, m: this.time.m, displayTime: this.displayTime };
 	};
 
 	/**
@@ -349,34 +331,35 @@
 	/**
 	 * @param {String} time - string that needs to be parsed, i.e. '11:15PM ' or '10:30 am'
 	 * @returns {Object|undefined} containing {h: hour, m: minute} or undefined if unrecognized
-	 * @see https://regexr.com/3heaj
+	 * @see https://regexr.com/4c8fo
 	 */
 	function _parseTime(time) {
-		var match = time.match(/^\s*([\d]{1,2}):([\d]{2})[\s]*([ap][m])?.*$/i);
+		if (!time) return;
+		var match = time.match(/^\s*([\d]{1,2})\D?([\d]{2})\W?(a|p)?.*$/i);
 
 		if (match) {
 			var hour = Number(match[1]);
 			var minute = Number(match[2]);
 			var postfix = match[3];
 
-			if (/pm/i.test(postfix) && hour !== 12) {
+			if (/p/i.test(postfix) && hour !== 12) {
 				hour += 12;
-			} else if (/am/i.test(postfix) && hour === 12) {
+			} else if (/a/i.test(postfix) && hour === 12) {
 				hour = 0;
 			}
-			
+
 			return { h: hour, m: minute };
 		}
 	}
 
 	/**
 	 * Create time considering am/pm conventions
-	 * @param {Number} hour 
+	 * @param {Number} hour
 	 * @param {Number} minute
 	 * @param {String} pattern - used time format
 	 * @param {Boolean} isAmPmMode - false if 24h mode
 	 * @param {Boolean} padZero - adds leading zero to single-digit hour
-	 * @return {String} time string, i.e. '12:30 pm' 
+	 * @return {String} time string, i.e. '12:30 pm'
 	 */
 	function _printTime(hour, minute, pattern, isAmPmMode, padZero) {
 		var displayHour = hour;
@@ -387,7 +370,7 @@
 			} else if (hour == 0) {
 				displayHour = 12;
 			}
-			pattern = pattern.replace(hour < 12 ? 'p' : 'a', '');
+			pattern = pattern.replace(hour < 12 ? /p/i : /a/i, '');
 		}
 
 		return pattern
@@ -410,7 +393,7 @@
 	// Create a dom node containing the markup for the picker
 	function _build(_this) {
 		var node = document.createElement('div');
-		node.innerHTML = _assemblePicker(_this.options, _this.template, _this.intervals, _this.disabledArr);
+		node.innerHTML = _assemblePicker(_this.options, _this.intervals, _this.disabledArr);
 		node.className = ('appo-picker' + (_this.options.large ? ' is-large' : ''));
 		node.setAttribute('aria-hidden', true);
 		_this.el.insertAdjacentElement('afterend', node);
@@ -420,31 +403,31 @@
 
 	/**
 	 * Assemble the html containing each appointment represented by a button
-	 * @param {Object} opt - options (see above)
-	 * @param {Object} tpl - template (see above)
+	 * @param {Object} opt - options object
 	 * @param {Array} intervals - array holding interval permutations
 	 * @param {Array} disabledArr - array holding disabled times
 	 */
-	function _assemblePicker(opt, tpl, intervals, disabledArr) {
+	function _assemblePicker(opt, intervals, disabledArr) {
+		// _this.options, _this.intervals, _this.disabledArr
 		var start = opt.startTime;
 		var end = opt.endTime;
 		var inner = '';
 		var isAmPmMode = opt.mode === '12h';
-		var timePattern = isAmPmMode ? tpl.time12 : tpl.time24;
+		var timePattern = isAmPmMode ? opt.timeFormat12 : opt.timeFormat24;
 
-		for (var hour = start; hour < end; hour++) { // Iterate hours start to end	
+		for (var hour = start; hour < end; hour++) { // Iterate hours start to end
 			for (var j = 0; j < intervals.length; j++) { // Iterate minutes by possible intervals
 				var minute = intervals[j];
 				var isDisabled = !_isValid(hour, minute, opt, intervals, disabledArr);
-				var timeTemplate = _printTime(hour, minute, timePattern, isAmPmMode, opt.leadingZero);
-				// Replace timeTemplate placeholders with time and disabled flag
-				inner += tpl.inner
-					.replace('{{time}}', timeTemplate)
+				var timeFormat = _printTime(hour, minute, timePattern, isAmPmMode, opt.leadingZero);
+				// Replace timeFormat placeholders with time and disabled flag
+				inner += opt.templateInner
+					.replace('{{time}}', timeFormat)
 					.replace(/{{disabled}}/ig, isDisabled ? 'disabled': '');
 			}
 		}
 
-		return tpl.outer
+		return opt.templateOuter
 			.replace('{{classes}}', opt.large ? 'is-large': '')
 			.replace('{{title}}', opt.title)
 			.replace('{{innerHtml}}', inner);
@@ -456,10 +439,11 @@
 	 * @param {String} name - event name
 	 * @param {Object} time - current time
 	 */
-	function _dispatchEvent(el, name, time) {
+	function _dispatchEvent(el, name, time, displayTime) {
 		var event = document.createEvent('Event');
 		event.initEvent(name + '.appo.picker', true, true);
 		event.time = time;
+		event.displayTime = displayTime;
 		el.dispatchEvent(event);
 	}
 
