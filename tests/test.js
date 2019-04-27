@@ -35,6 +35,15 @@ describe("appointment-picker API test (custom template)", function() {
 		console.log('pickerInstance =>', pickerInstance, 'input =>', pickerInstance.el);
 	});
 
+	describe("initial value recognition", function() {
+		it("applies the initial input value correctly as time", function() {
+			assert.isNumber(pickerInstance.getTime().h);
+			assert.isNumber(pickerInstance.getTime().m);
+			assert.equal(pickerInstance.getTime().h, 14);
+			assert.equal(pickerInstance.getTime().m, 30);
+		});
+	});
+
 	describe("display string time output", function() {
 		this.slow(500);
 
@@ -85,7 +94,7 @@ describe("appointment-picker API test (custom template)", function() {
 			assert.equal(value, '09.45');
 		});
 
-		it("prevents time reset once entered", function() {
+		it("prevents time reset via API", function() {
 			this.slow(500);
 
 			pickerInstance.setTime('10:15');
@@ -142,16 +151,20 @@ describe("appointment-picker API test (default template)", function() {
 		console.log('pickerInstance =>', pickerInstance, 'input =>', pickerInstance.el);
 	});
 
-	describe("initial value recognition", function() {
+	describe("initial state", function() {
+		// it("does not change/set the initial (server side) invalid input time", function() {
+		// 	var inputValue = pickerInstance.el.value;
+		// 	assert.equal(inputValue, '00:33 foo');
+		// });
 
-		it("applies the initial input value correctly as time", function() {
-			assert.isNumber(pickerInstance.getTime().h);
-			assert.isNumber(pickerInstance.getTime().m);
-			assert.equal(pickerInstance.getTime().h, 14);
-			assert.equal(pickerInstance.getTime().m, 30);
+		it("does not set the initial invalid input value to time/displayTime", function() {
+			var displayTime = pickerInstance.displayTime;
+			var time = pickerInstance.time;
+			assert.equal(displayTime, '');
+			assert.deepEqual(time, {});
 		});
-
 	});
+
 
 	describe("dom element creation", function() {
 
@@ -199,7 +212,7 @@ describe("appointment-picker API test (default template)", function() {
 
 	});
 
-	describe("time validation and rejection", function() {
+	describe("time validation and rejection via API", function() {
 
 		before(function() {
 			pickerInstance.setTime("18:00");

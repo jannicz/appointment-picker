@@ -23,7 +23,7 @@
 		</a>
 	</p>
 
-	<h2>Default (jQuery)</h2>
+	<h2>Default (no options, jQuery)</h2>
 	<p>
 		<label for="time-1">Time</label>
 		<input id="time-1" type="text" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
@@ -35,10 +35,10 @@
 var $picker = $('#time-1').appointmentPicker();</pre>
 	</p>
 
-	<h2>Large w/ options (jQuery)</h2>
+	<h2>Leading zero (large, jQuery)</h2>
 	<p>
 		<label for="time-2">Time</label>
-		<input id="time-2" type="text" value="11:15" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+		<input id="time-2" type="text" value="8:15" placeholder="hh:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
 		<pre>
 var $picker2 = $('#time-2').appointmentPicker({
 	title: 'Select an appointment',
@@ -69,7 +69,7 @@ var $picker2 = $('#time-2').appointmentPicker({
 		});
 	</script>
 
-	<h2>am/pm w/ options (vanillajs)</h2>
+	<h2>Disabled array and min/maxTime (am/pm, vanillajs)</h2>
 	<p>
 		<label for="time-3">Time</label>
 		<input id="time-3" type="text" value="2:30 pm" placeholder="h:mm am" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
@@ -85,7 +85,7 @@ var picker = new AppointmentPicker(document.getElementById('time-3'), {
 });</pre>
 	</p>
 
-	<h2 id="custom-time-format">am/pm large w/ options (vanillajs)</h2>
+	<h2 id="custom-time-format">Custom time format (large, am/pm, vanillajs)</h2>
 	<p>
 		<label for="time-4">Time</label>
 		<input id="time-4" type="text" value="12:00 pm" placeholder="h:mm am" aria-live="assertive" aria-label="Use up or down arrow keys to change time">

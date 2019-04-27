@@ -64,8 +64,8 @@ document.getElementById('open-2').addEventListener('click', function() {
 		<p>
 			<label for="time-ev">Time</label>
 			<input id="time-ev" type="text" value="18:00" placeholder="h:mm" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+			<span id="action-ev-out">closed</span> /
 			<span id="time-ev-out">change the time</span>
-			<span id="action-ev-out"></span>
 			<pre>
 new AppointmentPicker(document.getElementById('time-ev'), {});
 
@@ -80,7 +80,7 @@ document.getElementById('time-ev').addEventListener('open.appo.picker', function
 					document.getElementById('time-ev-out').innerHTML = JSON.stringify(e.time) + ', ' + JSON.stringify(e.displayTime);
 				}, false);
 				document.getElementById('time-ev').addEventListener('close.appo.picker', function (e) {
-					document.getElementById('action-ev-out').innerHTML = 'close';
+					document.getElementById('action-ev-out').innerHTML = 'closed';
 				}, false);
 				document.getElementById('time-ev').addEventListener('open.appo.picker', function (e) {
 					document.getElementById('action-ev-out').innerHTML = 'open';
