@@ -10,6 +10,13 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="src/appointment-picker.js"></script>
+
+	<style type="text/css">
+		.is-invalid {
+			background-color: salmon;
+			transition: background-color 0.2s;
+		}
+	</style>
 </head>
 <body>
 	<article>
@@ -126,6 +133,38 @@ new AppointmentPicker(document.getElementById('time-4'), {
 			allowReset: false,
 			large: true,
 			timeFormat12: 'H.M AP.M.'
+		});
+	</script>
+
+	<h2 id="validation"> Validation example (am/pm, vanillajs)</h2>
+	<p>
+		<label for="time-5">Time</label>
+		<input id="time-5" type="text" value="12:45 pm" placeholder="h:mm am" aria-live="assertive" aria-label="Use up or down arrow keys to change time">
+		<span>enter (in)valid values using the keyboard</span>
+
+		<pre>
+new AppointmentPicker(document.getElementById('time-5'), {
+	interval: 15,
+	mode: '12h',
+	minTime: 11,
+	maxTime: 16,
+	startTime: 11,
+	endTime: 16,
+	disabled: ['12:00 pm', '12:45 pm', '2:00 pm', '2:30 pm'],
+	markInvalid: true
+});</pre>
+	</p>
+
+	<script type="text/javascript">
+		new AppointmentPicker(document.getElementById('time-5'), {
+			interval: 15,
+			mode: '12h',
+			minTime: 11,
+			maxTime: 16,
+			startTime: 11,
+			endTime: 16,
+			disabled: ['12:00 pm', '12:45 pm', '2:00 pm', '2:30 pm'],
+			markInvalid: true
 		});
 	</script>
 
