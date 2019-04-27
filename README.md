@@ -63,6 +63,7 @@ The appointment-picker can be configured with options
 - `leadingZero` adds leading zero to single-digit hour if true (i.e. 07:15)
 - `allowReset` whether a time can be reset once entered
 - `title` defines the picker's heading
+- `markInvalid` if true, it adds a `is-invalid` class on the input if the current value is recognized as invalid and will be discarded (reset to previous) on the next focusout event (blur)
 - `templateOuter` HTML template that renders the picker's outer frame (usually containing a wrapper and title), must contain `{{innerHtml}}` placeholder ([example](https://jannicz.github.io/appointment-picker/example/render-on-init.html))
 - `templateInner` template for repeated list items (time inputs), must contain at least an `input` tag, `{{time}}` and optional `{{disabled}}` placeholder, i.e. `<input type="button" value="{{time}}" {{disabled}}>`
 - `timeFormat24` custom time format for 24h mode (use placeholder `H` for hour, `M` for minute), i.e. `H/M` could evaluate to `13/45` ([example](https://jannicz.github.io/appointment-picker/#custom-time-format))

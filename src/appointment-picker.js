@@ -3,9 +3,9 @@
  *
  * @module Appointment-Picker
  * @license MIT
- * @version 2.0.0
+ * @version 2.1.0
  * @author Jan Suwart
-*/
+ */
 (function (root, factory) {
 	if (typeof exports === 'object') {
 		module.exports = factory(root); // CommonJS (Node, Browserify, Webpack)
@@ -37,6 +37,7 @@
 			leadingZero: false, // Whether to zero pad hour (i.e. 07:15)
 			allowReset: true, // Whether a time can be reset once entered
 			title: 'Timepicker', // Title
+			markInvalid: false, // Whether to mark invalid inputs using a class
 			templateInner: '<li class="appo-picker-list-item {{disabled}}"><input type="button" tabindex="-1" value="{{time}}" {{disabled}}></li>',
 			templateOuter: '<span class="appo-picker-title">{{title}}</span><ul class="appo-picker-list">{{innerHtml}}</ul>',
 			timeFormat12: 'H:M apm', // Custom time format, must contain H and M placeholder
@@ -215,6 +216,7 @@
 		var selected = this.picker.querySelector('input.is-selected');
 		var next = null;
 
+
 		switch (e.keyCode) {
 			case 13: // Enter
 			case 27: // ESC
@@ -226,7 +228,30 @@
 			case 40: // Down Arrow
 				next = selected ? _getNextSibling(selected.parentNode, 1) : first.parentNode;
 				break;
+			case 37: // Left Arrow
+			case 39: // Right Arrow
+				break;
 			default:
+				if (this.options.markInvalid) {
+					var time = _parseTime(this.el.value);
+					console.log('on key press', e.keyCode, 'parsed value', time);
+
+					if (time) {
+						var isValid = _isValid(time.h, time.m, this.options, this.intervals, this.disabledArr);
+						console.log('isValid', isValid);
+						if (isValid) {
+							this.el.classList.remove('is-invalid');
+						} else {
+							this.el.classList.add('is-invalid');
+						}
+					} else if (!this.el.value && this.options.allowReset) {
+						console.log('no time, allowReset VALID');
+						this.el.classList.remove('is-invalid');
+					} else {
+						this.el.classList.add('is-invalid');
+						console.log('not recognized, INVALID');
+					}
+				}
 		}
 
 		if (next && !next.firstChild.disabled) {
@@ -271,24 +296,44 @@
 		var is24h = this.options.mode === '24h';
 		var timePattern = is24h ? this.options.timeFormat24 : this.options.timeFormat12;
 
+		console.log('setTime', value);
+
 		if (!time && !value && this.options.allowReset) { // Empty string, reset time
 			this.time = {};
 			this.displayTime = '';
+			this.el.value = this.displayTime;
 			_dispatchEvent(this.el, 'change', this.time, this.displayTime);
+
+			console.log('SET EMPTY TIME', this.time);
 		} else if (time) { // A time format was recognized
 			var hour = time.h;
 			var minute = time.m;
 			var isValid = _isValid(hour, minute, this.options, this.intervals, this.disabledArr);
 			var pad0 = this.options.leadingZero;
 
-			if (isValid) {
+			if (isValid) { // The time is valid
 				this.time = time;
 				this.displayTime = _printTime(this.time.h, this.time.m, timePattern, !is24h, pad0);
 				_dispatchEvent(this.el, 'change', this.time, this.displayTime);
+
+				this.el.value = this.displayTime;
+				this.el.classList.remove('is-invalid');
+
+				console.log('SET VALID TIME', this.time);
+			} else if (this.options.markInvalid) { // The time is invalid
+				this.el.classList.add('is-invalid');
+				console.log('INVALID TIME ???', this.time);
+			} else { // A time pattern was recognized, but considered invalid
+				console.log('there is something maybe invalid', time);
+				this.el.value = this.displayTime;
 			}
+		} else { // None of the above, reset displayTime as the time was not changed
+			console.log('RESET DISPLAY TIME', this.time, this.displayTime);
+			this.el.value = this.displayTime;
+			this.el.classList.remove('is-invalid');
 		}
+
 		this.render();
-		this.el.value = this.displayTime;
 	};
 
 	// Time getter returns time as object
